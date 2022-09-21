@@ -6,7 +6,7 @@ import { Comment } from '../../components/Comment';
 export default function Article({ article }) {
   console.log(article);
   const { title, description, updatedAt, createdAt, body, comments } = article;
-  const { name, image } = article.author;
+  const { username, image } = article.author;
   return (
     <Layout>
       <div class='article-page'>
@@ -14,18 +14,18 @@ export default function Article({ article }) {
           <div class='container'>
             <h1>{title}</h1>
             <div class='article-meta'>
-              <Link href={`./@${name}`}>
+              <Link href={`./@${username}`}>
                 <img src={image} />
               </Link>
               <div class='info'>
-                <Link href={`./@${name}`}>
-                  <a className='author'>{name}</a>
+                <Link href={`./@${username}`}>
+                  <a className='author'>{username}</a>
                 </Link>
                 <span class='date'>{updatedAt ? updatedAt : createdAt}</span>
               </div>
               <button class='btn btn-sm btn-outline-secondary'>
                 <i class='ion-plus-round'></i>
-                &nbsp; Follow {name} <span class='counter'>(10)</span>
+                &nbsp; Follow {username} <span class='counter'>(10)</span>
               </button>
               &nbsp;&nbsp;
               <button class='btn btn-sm btn-outline-primary'>
@@ -57,18 +57,18 @@ export default function Article({ article }) {
 
           <div class='article-actions'>
             <div class='article-meta'>
-              <Link href={`./@${name}`}>
+              <Link href={`./@${username}`}>
                 <img src={image} />
               </Link>
               <div class='info'>
-                <Link href={`./@${name}`}>
-                  <a className='author'>{name}</a>
+                <Link href={`./@${username}`}>
+                  <a className='author'>{username}</a>
                 </Link>
                 <span class='date'>{updatedAt ? updatedAt : createdAt}</span>
               </div>
               <button class='btn btn-sm btn-outline-secondary'>
                 <i class='ion-plus-round'></i>
-                &nbsp; Follow {name}
+                &nbsp; Follow {username}
               </button>
               &nbsp;
               <button class='btn btn-sm btn-outline-primary'>

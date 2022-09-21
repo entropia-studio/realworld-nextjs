@@ -1,16 +1,16 @@
 import Link from 'next/link';
 export const ArticleRow = ({ article }) => {
   const { title, description, slug, updatedAt, createdAt } = article;
-  const { name, image } = article.author;
+  const { username, image } = article.author;
   return (
     <div className='article-preview'>
       <div className='article-meta'>
-        <Link href={`./@${name}`}>
+        <Link href={`./@${username}`}>
           <img src={image} />
         </Link>
         <div className='info'>
-          <Link href={`./@${name}`}>
-            <a className='author'>{name}</a>
+          <Link href={`./@${username}`}>
+            <a className='author'>{username}</a>
           </Link>
           <span className='date'>{updatedAt ? updatedAt : createdAt}</span>
         </div>

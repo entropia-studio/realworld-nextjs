@@ -1,6 +1,7 @@
 import { contentfulClient } from '../../../contentful';
 import { documentToHtmlString } from '@contentful/rich-text-html-renderer';
 import { formatDateAndTime } from '@contentful/f36-components';
+import { getAuthor } from '../articles';
 
 export default async function handler(req, res) {
   const { slug } = req.query;
@@ -12,9 +13,8 @@ export default async function handler(req, res) {
   const articles = await (
     await contentfulClient.getEntries(query)
   ).items.map((article) => {
-    const { slug, title, description, body, tags, author } = article.fields;
-    const { name, bio, image } = author.fields;
-    const { createdAt, updatedAt } = author.sys;
+    const { slug, title, description, body, tags, user } = article.fields;
+    const { createdAt, updatedAt } = article.sys;
     const tagList = tags.map((tag) => {
       return {
         name: tag.fields.name,
@@ -26,11 +26,7 @@ export default async function handler(req, res) {
       description: documentToHtmlString(description),
       body: documentToHtmlString(body),
       tagList,
-      author: {
-        name,
-        bio: documentToHtmlString(bio),
-        image: `https:${image.fields.file.url}`,
-      },
+      author: getAuthor(user),
       comments: getComments(article),
       createdAt: formatDateAndTime(createdAt, 'day'),
       updatedAt: formatDateAndTime(updatedAt, 'day'),
@@ -49,15 +45,10 @@ export default async function handler(req, res) {
 
 const getComments = (article) => {
   const comments = article.fields.comments?.map((comment) => {
-    const { author, description } = comment.fields;
-    const { name, bio, image } = author.fields;
+    const { user, description } = comment.fields;
     const { createdAt, updatedAt } = comment.sys;
     return {
-      author: {
-        name,
-        bio: documentToHtmlString(bio),
-        image: `https:${image.fields.file.url}`,
-      },
+      author: getAuthor(user),
       description: documentToHtmlString(description),
       createdAt: formatDateAndTime(createdAt, 'day'),
       updatedAt: formatDateAndTime(updatedAt, 'day'),
