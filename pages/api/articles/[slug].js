@@ -31,12 +31,13 @@ export default async function handler(req, res) {
         bio: documentToHtmlString(bio),
         image: `https:${image.fields.file.url}`,
       },
+      comments: getComments(article),
       createdAt: formatDateAndTime(createdAt, 'day'),
       updatedAt: formatDateAndTime(updatedAt, 'day'),
     };
   });
   try {
-    res.status(200).json({ articles: articles[0] });
+    res.status(200).json({ article: articles[0] });
   } catch (error) {
     res.status(422).json({
       errors: {
@@ -45,3 +46,19 @@ export default async function handler(req, res) {
     });
   }
 }
+
+const getComments = (article) => {
+  const comments = article.fields.comments?.map((comment) => {
+    const { author, description } = comment.fields;
+    const { name, bio, image } = author.fields;
+    return {
+      author: {
+        name,
+        bio: documentToHtmlString(bio),
+        image: `https:${image.fields.file.url}`,
+      },
+      description: documentToHtmlString(description),
+    };
+  });
+  return comments;
+};
