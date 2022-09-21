@@ -51,6 +51,7 @@ const getComments = (article) => {
   const comments = article.fields.comments?.map((comment) => {
     const { author, description } = comment.fields;
     const { name, bio, image } = author.fields;
+    const { createdAt, updatedAt } = comment.sys;
     return {
       author: {
         name,
@@ -58,6 +59,8 @@ const getComments = (article) => {
         image: `https:${image.fields.file.url}`,
       },
       description: documentToHtmlString(description),
+      createdAt: formatDateAndTime(createdAt, 'day'),
+      updatedAt: formatDateAndTime(updatedAt, 'day'),
     };
   });
   return comments;

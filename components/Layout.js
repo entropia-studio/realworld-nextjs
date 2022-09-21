@@ -1,8 +1,11 @@
-import { Html, Head, Main, NextScript } from 'next/document';
+import React from 'react';
+import Head from 'next/head';
+import { Footer } from './Footer';
+import { Navigation } from './Navigation';
 
-export default function Document() {
+export const Layout = ({ children }) => {
   return (
-    <Html>
+    <>
       <Head>
         <meta charSet='utf-8' />
         <title>Conduit</title>
@@ -18,10 +21,9 @@ export default function Document() {
         />
         <link rel='stylesheet' href='//demo.productionready.io/main.css'></link>
       </Head>
-      <body>
-        <Main />
-        <NextScript />
-      </body>
-    </Html>
+      <Navigation />
+      <main className='m-b-3'>{children}</main>
+      <Footer />
+    </>
   );
-}
+};
