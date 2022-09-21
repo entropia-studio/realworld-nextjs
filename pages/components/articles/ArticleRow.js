@@ -18,10 +18,10 @@ export const ArticleRow = ({ article }) => {
           <i className='ion-heart'></i> 29
         </button>
       </div>
-      <Link href={`./article/${slug}`}>
+      <Link href={`./articles/${slug}`}>
         <a className='preview-link'>
           <h1>{title}</h1>
-          <p
+          <div
             dangerouslySetInnerHTML={{
               __html: description,
             }}
