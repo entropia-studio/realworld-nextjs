@@ -28,17 +28,13 @@ export const Navigation = () => {
             </Link>
           </li>
           <li className='nav-item'>
-            <Link href='/'>
-              <a className='nav-link' href='/'>
-                Sign in
-              </a>
+            <Link href='/login'>
+              <a className='nav-link'>Sign in</a>
             </Link>
           </li>
           <li className='nav-item'>
-            <Link href='/'>
-              <a className='nav-link' href='/'>
-                Sign up
-              </a>
+            <Link href='/register'>
+              <a className='nav-link'>Sign up</a>
             </Link>
           </li>
         </ul>
