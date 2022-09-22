@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@auth0/nextjs-auth0": "^1.9.1",
     "@contentful/f36-components": "^4.20.6",
     "@contentful/rich-text-html-renderer": "^15.13.1",
     "contentful": "^9.2.4",
