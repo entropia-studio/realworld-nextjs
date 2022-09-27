@@ -10,7 +10,6 @@ export default withApiAuthRequired(async function handler(req, res) {
     ['fields.username']: req.query.username,
   };
 
-  let followers = [];
   const { method } = req;
   try {
     if (method !== 'POST' && method !== 'DELETE') {
