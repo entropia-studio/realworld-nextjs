@@ -10,7 +10,8 @@ export default async function handler(req, res) {
   const articles = await (
     await contentfulClient.getEntries(query)
   ).items.map((article) => {
-    const { slug, title, description, body, tags, user } = article.fields;
+    const { slug, title, description, body, tags, user, favorites } =
+      article.fields;
     const { createdAt, updatedAt } = article.sys;
     const tagList = tags.map((tag) => {
       return {
@@ -26,6 +27,8 @@ export default async function handler(req, res) {
       author: getAuthor(user),
       createdAt: formatDateAndTime(createdAt, 'day'),
       updatedAt: formatDateAndTime(updatedAt, 'day'),
+      favorited: false,
+      favoritesCount: getFavoritesCount(favorites),
     };
   });
 
@@ -39,4 +42,8 @@ export const getAuthor = (user) => {
     bio: documentToHtmlString(bio),
     image,
   };
+};
+
+export const getFavoritesCount = (favorites) => {
+  return favorites ? favorites.length : 0;
 };

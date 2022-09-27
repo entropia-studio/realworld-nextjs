@@ -1,0 +1,72 @@
+import { Layout } from '../components/Layout';
+import Link from 'next/link';
+import { withPageAuthRequired } from '@auth0/nextjs-auth0';
+
+export default function Setting() {
+  return (
+    <Layout>
+      <div className='settings-page'>
+        <div className='container page'>
+          <div className='row'>
+            <div className='col-md-6 offset-md-3 col-xs-12'>
+              <h1 className='text-xs-center'>Your Settings</h1>
+              <form>
+                <fieldset>
+                  <fieldset className='form-group'>
+                    <input
+                      className='form-control'
+                      type='text'
+                      placeholder='URL of profile picture'
+                    />
+                  </fieldset>
+                  <fieldset className='form-group'>
+                    <input
+                      className='form-control form-control-lg'
+                      type='text'
+                      placeholder='Your Name'
+                    />
+                  </fieldset>
+                  <fieldset className='form-group'>
+                    <textarea
+                      className='form-control form-control-lg'
+                      rows='8'
+                      placeholder='Short bio about you'
+                    ></textarea>
+                  </fieldset>
+                  <fieldset className='form-group'>
+                    <input
+                      className='form-control form-control-lg'
+                      type='text'
+                      placeholder='Email'
+                    />
+                  </fieldset>
+                  <fieldset className='form-group'>
+                    <input
+                      className='form-control form-control-lg'
+                      type='password'
+                      placeholder='Password'
+                    />
+                  </fieldset>
+                  <button className='btn btn-lg btn-primary pull-xs-right'>
+                    Update Settings
+                  </button>
+                </fieldset>
+              </form>
+              <hr></hr>
+              <Link href='/api/auth/logout'>
+                <button
+                  className='btn btn-outline-danger'
+                  ng-click='$ctrl.logout()'
+                >
+                  Or click here to logout.
+                </button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Layout>
+  );
+}
+
+export const getServerSideProps = withPageAuthRequired();

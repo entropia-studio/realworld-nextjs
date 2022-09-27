@@ -3,24 +3,24 @@ import Link from 'next/link';
 export const Comment = ({ description, author, createdAt, updatedAt }) => {
   const { name, image } = author;
   return (
-    <div class='card'>
-      <div class='card-block'>
+    <div className='card'>
+      <div className='card-block'>
         <div
-          class='card-text'
+          className='card-text'
           dangerouslySetInnerHTML={{
             __html: description,
           }}
         />
       </div>
-      <div class='card-footer'>
+      <div className='card-footer'>
         <Link href={`./@${author.name}`}>
-          <a class='comment-author'>
-            <img src={image} class='comment-author-img' />
+          <a className='comment-author'>
+            <img src={image} className='comment-author-img' />
           </a>
         </Link>
         &nbsp;
-        <a class='comment-author'>{name}</a>
-        <span class='date-posted'>{updatedAt ? updatedAt : createdAt}</span>
+        <a className='comment-author'>{name}</a>
+        <span className='date-posted'>{updatedAt ? updatedAt : createdAt}</span>
       </div>
     </div>
   );

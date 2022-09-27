@@ -1,6 +1,4 @@
 import { contentfulClient } from '../../contentful';
-import { documentToHtmlString } from '@contentful/rich-text-html-renderer';
-import { formatDateAndTime } from '@contentful/f36-components';
 
 export default async function handler(req, res) {
   const query = {

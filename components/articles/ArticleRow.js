@@ -1,6 +1,7 @@
 import Link from 'next/link';
 export const ArticleRow = ({ article }) => {
-  const { title, description, slug, updatedAt, createdAt } = article;
+  const { title, description, slug, updatedAt, createdAt, favoritesCount } =
+    article;
   const { username, image } = article.author;
   return (
     <div className='article-preview'>
@@ -15,7 +16,7 @@ export const ArticleRow = ({ article }) => {
           <span className='date'>{updatedAt ? updatedAt : createdAt}</span>
         </div>
         <button className='btn btn-outline-primary btn-sm pull-xs-right'>
-          <i className='ion-heart'></i> 29
+          <i className='ion-heart'></i> {favoritesCount}
         </button>
       </div>
       <Link href={`./articles/${slug}`}>

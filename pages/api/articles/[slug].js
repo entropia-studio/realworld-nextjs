@@ -1,7 +1,7 @@
 import { contentfulClient } from '../../../contentful';
 import { documentToHtmlString } from '@contentful/rich-text-html-renderer';
 import { formatDateAndTime } from '@contentful/f36-components';
-import { getAuthor } from '../articles';
+import { getAuthor, getFavoritesCount } from '../articles';
 
 export default async function handler(req, res) {
   const { slug } = req.query;
@@ -13,7 +13,8 @@ export default async function handler(req, res) {
   const articles = await (
     await contentfulClient.getEntries(query)
   ).items.map((article) => {
-    const { slug, title, description, body, tags, user } = article.fields;
+    const { slug, title, description, body, tags, user, favorites } =
+      article.fields;
     const { createdAt, updatedAt } = article.sys;
     const tagList = tags.map((tag) => {
       return {
@@ -30,6 +31,7 @@ export default async function handler(req, res) {
       comments: getComments(article),
       createdAt: formatDateAndTime(createdAt, 'day'),
       updatedAt: formatDateAndTime(updatedAt, 'day'),
+      favoritesCount: getFavoritesCount(favorites),
     };
   });
   try {
