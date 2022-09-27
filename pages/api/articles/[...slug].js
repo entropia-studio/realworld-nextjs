@@ -2,17 +2,33 @@ import { contentfulClient } from '../../../contentful';
 import { documentToHtmlString } from '@contentful/rich-text-html-renderer';
 import { formatDateAndTime } from '@contentful/f36-components';
 import { getAuthor, getFavoritesCount } from '../articles';
+import { getSession } from '@auth0/nextjs-auth0';
 
 export default async function handler(req, res) {
-  const { slug } = req.query;
+  const slug = req.query.slug[0];
+  const action = req.query.slug?.length > 1 ? req.query.slug[1] : undefined;
+
   const query = {
     content_type: 'realArticle',
     include: 10,
     ['fields.slug']: slug,
   };
+
+  const session = await getSession(req, res);
   const articles = await (
     await contentfulClient.getEntries(query)
   ).items.map((article) => {
+    if (action === 'comments') {
+      const { method } = req;
+      switch (method) {
+        case 'GET':
+          const comments = {
+            comments: getCommentsByArticle(article),
+          };
+          return res.status(200).json(comments);
+      }
+    }
+
     const { slug, title, description, body, tags, user, favorites } =
       article.fields;
     const { createdAt, updatedAt } = article.sys;
@@ -27,8 +43,8 @@ export default async function handler(req, res) {
       description: documentToHtmlString(description),
       body: documentToHtmlString(body),
       tagList,
-      author: getAuthor(user),
-      comments: getComments(article),
+      author: getAuthor(user, session),
+      comments: getCommentsByArticle(article),
       createdAt: formatDateAndTime(createdAt, 'day'),
       updatedAt: formatDateAndTime(updatedAt, 'day'),
       favoritesCount: getFavoritesCount(favorites),
@@ -45,11 +61,12 @@ export default async function handler(req, res) {
   }
 }
 
-const getComments = (article) => {
+const getCommentsByArticle = (article) => {
   const comments = article.fields.comments?.map((comment) => {
     const { user, description } = comment.fields;
     const { createdAt, updatedAt } = comment.sys;
     return {
+      id: comment.sys.id,
       author: getAuthor(user),
       description: documentToHtmlString(description),
       createdAt: formatDateAndTime(createdAt, 'day'),
