@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import { useUser } from '@auth0/nextjs-auth0';
-import { getArticleBySlug, getArticlePaths, getProfile } from '../../lib/api';
+import { getArticleBySlug, getArticlePaths, getComments } from '../../lib/api';
 import Link from 'next/link';
 import { Layout } from '../../components/Layout';
 import { Comment } from '../../components/Comment';
@@ -8,7 +8,7 @@ import { API_URL } from '../../lib/api';
 import { useState, useEffect } from 'react';
 import { CommentForm } from '../../components/articles/comments/CommentForm';
 
-export default function Article({ article }) {
+export default function Article({ article, comments }) {
   const router = useRouter();
   const { user } = useUser();
   const [profile, setProfile] = useState();
@@ -25,15 +25,9 @@ export default function Article({ article }) {
     setProfile(profileJson);
   };
 
-  const {
-    title,
-    description,
-    updatedAt,
-    createdAt,
-    body,
-    comments,
-    favoritesCount,
-  } = article;
+  const { title, description, updatedAt, createdAt, body, favoritesCount } =
+    article;
+
   const { username, image } = article.author;
 
   const manageAuthorSubscription = async (following) => {
@@ -153,7 +147,9 @@ export default function Article({ article }) {
                 ></CommentForm>
               )}
               {comments?.length ? (
-                comments.map((comment) => <Comment {...comment} />)
+                comments.map((comment) => (
+                  <Comment key={comment.id} {...comment} />
+                ))
               ) : (
                 <div className='mt-2'></div>
               )}
@@ -174,11 +170,14 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }) {
-  const article = (await getArticleBySlug(params.slug)).article;
+  const { slug } = params;
+  const article = (await getArticleBySlug(slug)).article;
+  const comments = (await getComments(slug)).comments;
 
   return {
     props: {
       article,
+      comments,
     },
   };
 }

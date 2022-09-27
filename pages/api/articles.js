@@ -23,7 +23,9 @@ export default async function handler(req, res) {
         };
       });
       const author = getAuthor(user, session);
+      const id = article.sys.id;
       return {
+        id,
         slug,
         title,
         description: documentToHtmlString(description),
