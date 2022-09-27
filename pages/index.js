@@ -32,7 +32,7 @@ export default function Home({ tags, articles }) {
                   </ul>
                 </div>
                 {articles.map((article) => (
-                  <ArticleRow article={article} />
+                  <ArticleRow article={article} key={article.id} />
                 ))}
               </div>
               <Tags tags={tags} />

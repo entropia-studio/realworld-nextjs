@@ -3,7 +3,6 @@ import { useUser } from '@auth0/nextjs-auth0';
 
 export const Navigation = () => {
   const { user } = useUser();
-  console.log(user);
   return (
     <nav className='navbar navbar-light'>
       <div className='container'>
