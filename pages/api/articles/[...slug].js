@@ -1,7 +1,11 @@
 import { contentfulClient } from '../../../contentful';
 import { getSession } from '@auth0/nextjs-auth0';
 import { getMinifiedArticle } from '../utils/articles';
-import { getCommentsByArticle, postCommentForArticle } from '../utils/comments';
+import {
+  getCommentsByArticle,
+  postComment,
+  deleteComment,
+} from '../utils/comments';
 
 export default async function handler(req, res) {
   const slug = req.query.slug[0];
@@ -32,11 +36,14 @@ export default async function handler(req, res) {
             throw new Error('User not logged');
           }
           const body = JSON.parse(req.body);
-          payload = await postCommentForArticle(
-            userSession,
-            article,
-            body.comment.body
-          );
+          payload = await postComment(userSession, article, body.comment.body);
+          break;
+        case 'DELETE':
+          if (!userSession) {
+            throw new Error('User not logged');
+          }
+          const idComment = req.query.slug[2];
+          payload = await deleteComment(article, idComment);
           break;
       }
       return res.status(200).json(payload);

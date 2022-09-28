@@ -5,6 +5,8 @@ import {
   getUserByEmail,
   getRichText,
   publishEntry,
+  deleteEntryById,
+  unpublishEntryById,
 } from './contentful';
 import { getAuthor } from './articles';
 import { contentfulManagementEnvironment } from '../../../contentful/management';
@@ -24,16 +26,12 @@ export const getCommentsByArticle = (article) => {
   return comments;
 };
 
-export const postCommentForArticle = async (
-  userSession,
-  articleEntry,
-  comment
-) => {
-  const article = await getEntryById(articleEntry.sys.id);
-  const commentEntry = await createComment(userSession, articleEntry, comment);
+export const postComment = async (userSession, article, comment) => {
+  const articleEntry = await getEntryById(article.sys.id);
+  const commentEntry = await createComment(userSession, article, comment);
 
-  const commentsLinked = articleEntry.fields.comments
-    ? articleEntry.fields.comments.map((comment) => {
+  const commentsLinked = article.fields.comments
+    ? article.fields.comments.map((comment) => {
         return {
           sys: {
             type: 'Link',
@@ -57,15 +55,43 @@ export const postCommentForArticle = async (
     ],
   };
 
-  article.fields = {
-    ...article.fields,
+  articleEntry.fields = {
+    ...articleEntry.fields,
     comments,
   };
 
-  await article.update();
-  await publishEntry(articleEntry.sys.id);
+  await articleEntry.update();
+  await publishEntry(article.sys.id);
 
   return getMinifiedComment(commentEntry);
+};
+
+export const deleteComment = async (article, idComment) => {
+  const articleEntry = await getEntryById(article.sys.id);
+  const commentEntry = await getEntryById(idComment);
+  const commentsLinked = article.fields.comments
+    .map((comment) => {
+      return {
+        sys: {
+          type: 'Link',
+          linkType: 'Entry',
+          id: comment.sys.id,
+        },
+      };
+    })
+    .filter((comment) => comment.sys.id !== idComment);
+  const comments = {
+    'en-US': [...commentsLinked],
+  };
+  articleEntry.fields = {
+    ...articleEntry.fields,
+    comments,
+  };
+  await articleEntry.update();
+  await publishEntry(article.sys.id);
+  await commentEntry.unpublish();
+  await deleteEntryById(idComment);
+  return {};
 };
 
 const getMinifiedComment = (comment) => {

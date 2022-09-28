@@ -10,6 +10,14 @@ export const getEntryById = async (entryId) => {
   return await (await contentfulManagementEnvironment()).getEntry(entryId);
 };
 
+export const deleteEntryById = async (entryId) => {
+  return await (await contentfulManagementEnvironment()).deleteEntry(entryId);
+};
+
+export const unpublishEntryById = async (entryId) => {
+  return await (await contentfulManagementEnvironment()).unpublish(entryId);
+};
+
 export const findUserIdByEmail = async (email) => {
   const query = {
     content_type: 'realUser',

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export const CommentForm = ({ image, createComment }) => {
+export const CommentForm = ({ user, createComment }) => {
   const [comment, setComment] = useState('');
 
   const handleSubmit = (e) => {
@@ -21,7 +21,7 @@ export const CommentForm = ({ image, createComment }) => {
         ></textarea>
       </div>
       <div className='card-footer'>
-        <img src={image} className='comment-author-img' />
+        <img src={user.picture} className='comment-author-img' />
         <button className='btn btn-sm btn-primary'>Post Comment</button>
       </div>
     </form>

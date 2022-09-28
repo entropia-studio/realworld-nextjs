@@ -62,6 +62,14 @@ export default function Article({ article, comments }) {
     setComments([...(commentList ?? []), commentJson]);
   };
 
+  const deleteComment = async (id) => {
+    const options = {
+      method: 'DELETE',
+    };
+    await fetch(`${API_URL}/articles/${article.slug}/comments/${id}`, options);
+    setComments(commentList.filter((comment) => comment.id !== id));
+  };
+
   const getFollowText = () => {
     if (!user) {
       return 'Follow';
@@ -157,13 +165,18 @@ export default function Article({ article, comments }) {
             <div className='col-xs-12 col-md-8 offset-md-2'>
               {user && (
                 <CommentForm
-                  image={image}
+                  user={user}
                   createComment={createComment}
                 ></CommentForm>
               )}
               {commentList?.length ? (
                 commentList.map((comment) => (
-                  <Comment key={comment.id} {...comment} />
+                  <Comment
+                    key={comment.id}
+                    {...comment}
+                    deleteComment={deleteComment}
+                    user={user}
+                  />
                 ))
               ) : (
                 <div className='mt-2'></div>

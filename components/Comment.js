@@ -1,7 +1,22 @@
 import Link from 'next/link';
 
-export const Comment = ({ description, author, createdAt, updatedAt }) => {
+export const Comment = ({
+  id,
+  description,
+  author,
+  createdAt,
+  updatedAt,
+  deleteComment,
+  user,
+}) => {
   const { name, image } = author;
+
+  const onDeleteComment = () => {
+    deleteComment(id);
+  };
+
+  const isCreatedByUser = author.username === user?.nickname;
+
   return (
     <div className='card'>
       <div className='card-block'>
@@ -21,6 +36,11 @@ export const Comment = ({ description, author, createdAt, updatedAt }) => {
         &nbsp;
         <a className='comment-author'>{name}</a>
         <span className='date-posted'>{updatedAt ? updatedAt : createdAt}</span>
+        {isCreatedByUser && (
+          <span class='mod-options'>
+            <i class='ion-trash-a' onClick={onDeleteComment}></i>
+          </span>
+        )}
       </div>
     </div>
   );
