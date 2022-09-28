@@ -1,6 +1,6 @@
 import { documentToHtmlString } from '@contentful/rich-text-html-renderer';
 import { contentfulClient } from '../../../contentful';
-import { contentfulManagementEnvironment } from '../../../contentful/management';
+
 import { getSession, withApiAuthRequired } from '@auth0/nextjs-auth0';
 
 export default withApiAuthRequired(async function handler(req, res) {
@@ -75,23 +75,4 @@ const managePostDelete = async (req, entryId, userEmail) => {
   await publishEntry(entryId);
 
   return { ...entryUpdated.fields, following };
-};
-
-const publishEntry = async (entryId) => {
-  const entry = await getEntryById(entryId);
-  await entry.publish();
-};
-
-const getEntryById = async (entryId) => {
-  return await (await contentfulManagementEnvironment()).getEntry(entryId);
-};
-
-const findUserIdByEmail = async (email) => {
-  const query = {
-    content_type: 'realUser',
-    include: 10,
-    ['fields.email']: email,
-  };
-  const userEntries = await contentfulClient.getEntries(query);
-  return userEntries.items[0].sys.id;
 };

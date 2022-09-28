@@ -12,6 +12,7 @@ export default function Article({ article, comments }) {
   const router = useRouter();
   const { user } = useUser();
   const [profile, setProfile] = useState();
+  const [commentList, setComments] = useState(comments);
 
   useEffect(() => {
     getProfile();
@@ -33,18 +34,32 @@ export default function Article({ article, comments }) {
   const manageAuthorSubscription = async (following) => {
     if (!user) {
       router.push('/api/auth/login');
-    } else {
-      const options = {
-        method: following ? 'DELETE' : 'POST',
-      };
-      const profileResp = await fetch(`/api/follow/${username}`, options);
-      const profileJson = await profileResp.json();
-      setProfile(profileJson);
+      return;
     }
+    const options = {
+      method: following ? 'DELETE' : 'POST',
+    };
+    const profileResp = await fetch(`/api/follow/${username}`, options);
+    const profileJson = await profileResp.json();
+    setProfile(profileJson);
   };
 
-  const createComment = (comment) => {
-    console.log('create comment', comment);
+  const createComment = async (payload) => {
+    const options = {
+      method: 'POST',
+      body: JSON.stringify({
+        comment: {
+          body: payload,
+        },
+      }),
+    };
+    const commentResp = await fetch(
+      `${API_URL}/articles/${article.slug}/comments`,
+      options
+    );
+
+    const commentJson = await commentResp.json();
+    setComments([...(commentList ?? []), commentJson]);
   };
 
   const getFollowText = () => {
@@ -146,8 +161,8 @@ export default function Article({ article, comments }) {
                   createComment={createComment}
                 ></CommentForm>
               )}
-              {comments?.length ? (
-                comments.map((comment) => (
+              {commentList?.length ? (
+                commentList.map((comment) => (
                   <Comment key={comment.id} {...comment} />
                 ))
               ) : (
@@ -172,7 +187,7 @@ export async function getStaticPaths() {
 export async function getStaticProps({ params }) {
   const { slug } = params;
   const article = (await getArticleBySlug(slug)).article;
-  const comments = (await getComments(slug)).comments;
+  const comments = (await getComments(slug)).comments ?? null;
 
   return {
     props: {

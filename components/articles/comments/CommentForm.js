@@ -5,6 +5,7 @@ export const CommentForm = ({ image, createComment }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setComment('');
     createComment(comment);
   };
 
@@ -15,6 +16,7 @@ export const CommentForm = ({ image, createComment }) => {
           className='form-control'
           placeholder='Write a comment...'
           rows='3'
+          value={comment}
           onChange={(e) => setComment(e.target.value)}
         ></textarea>
       </div>

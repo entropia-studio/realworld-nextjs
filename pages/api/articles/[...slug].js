@@ -1,8 +1,7 @@
 import { contentfulClient } from '../../../contentful';
-import { documentToHtmlString } from '@contentful/rich-text-html-renderer';
-import { formatDateAndTime } from '@contentful/f36-components';
-import { getAuthor, getFavoritesCount } from '../articles';
 import { getSession } from '@auth0/nextjs-auth0';
+import { getMinifiedArticle } from '../utils/articles';
+import { getCommentsByArticle, postCommentForArticle } from '../utils/comments';
 
 export default async function handler(req, res) {
   const slug = req.query.slug[0];
@@ -14,44 +13,36 @@ export default async function handler(req, res) {
     ['fields.slug']: slug,
   };
 
-  const session = await getSession(req, res);
-  const articles = await (
-    await contentfulClient.getEntries(query)
-  ).items.map((article) => {
+  try {
+    const session = await getSession(req, res);
+    const userSession = session ? session.user : undefined;
+    const article = await (await contentfulClient.getEntries(query)).items[0];
+
     if (action === 'comments') {
       const { method } = req;
+      let payload;
       switch (method) {
         case 'GET':
-          const comments = {
+          payload = {
             comments: getCommentsByArticle(article),
           };
-          return res.status(200).json(comments);
+          break;
+        case 'POST':
+          if (!userSession) {
+            throw new Error('User not logged');
+          }
+          const body = JSON.parse(req.body);
+          payload = await postCommentForArticle(
+            userSession,
+            article,
+            body.comment.body
+          );
+          break;
       }
+      return res.status(200).json(payload);
     }
-
-    const { slug, title, description, body, tags, user, favorites } =
-      article.fields;
-    const { createdAt, updatedAt } = article.sys;
-    const tagList = tags.map((tag) => {
-      return {
-        name: tag.fields.name,
-      };
-    });
-    return {
-      slug,
-      title,
-      description: documentToHtmlString(description),
-      body: documentToHtmlString(body),
-      tagList,
-      author: getAuthor(user, session),
-      comments: getCommentsByArticle(article),
-      createdAt: formatDateAndTime(createdAt, 'day'),
-      updatedAt: formatDateAndTime(updatedAt, 'day'),
-      favoritesCount: getFavoritesCount(favorites),
-    };
-  });
-  try {
-    res.status(200).json({ article: articles[0] });
+    const articleMinified = getMinifiedArticle(article, session);
+    res.status(200).json({ article: articleMinified });
   } catch (error) {
     res.status(422).json({
       errors: {
@@ -60,18 +51,3 @@ export default async function handler(req, res) {
     });
   }
 }
-
-const getCommentsByArticle = (article) => {
-  const comments = article.fields.comments?.map((comment) => {
-    const { user, description } = comment.fields;
-    const { createdAt, updatedAt } = comment.sys;
-    return {
-      id: comment.sys.id,
-      author: getAuthor(user),
-      description: documentToHtmlString(description),
-      createdAt: formatDateAndTime(createdAt, 'day'),
-      updatedAt: formatDateAndTime(updatedAt, 'day'),
-    };
-  });
-  return comments;
-};

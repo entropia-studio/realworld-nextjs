@@ -2,6 +2,7 @@ import { contentfulClient } from '../../contentful';
 import { documentToHtmlString } from '@contentful/rich-text-html-renderer';
 import { formatDateAndTime } from '@contentful/f36-components';
 import { getSession } from '@auth0/nextjs-auth0';
+import { getAuthor, getFavoritesCount } from './utils/articles';
 
 export default async function handler(req, res) {
   const query = {
@@ -48,30 +49,3 @@ export default async function handler(req, res) {
     });
   }
 }
-
-export const getAuthor = (user, session) => {
-  const { username, bio, image } = user.fields;
-  const userSession = session ? session.user : undefined;
-  const following = isUserFollowed(userSession);
-
-  return {
-    username,
-    bio: documentToHtmlString(bio),
-    image,
-    following,
-  };
-};
-
-export const isUserFollowed = (user) => {
-  if (!user?.followers || user?.followers?.length === 0) {
-    return false;
-  }
-
-  return user.followers?.some(
-    (follower) => follower.fields.email === user.email
-  );
-};
-
-export const getFavoritesCount = (favorites) => {
-  return favorites ? favorites.length : 0;
-};
