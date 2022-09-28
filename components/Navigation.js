@@ -18,7 +18,7 @@ export const Navigation = () => {
           {user && (
             <>
               <li className='nav-item'>
-                <Link href='/'>
+                <Link href='/editor'>
                   <a className='nav-link'>
                     <i className='ion-compose'></i>&nbsp;New Article
                   </a>
