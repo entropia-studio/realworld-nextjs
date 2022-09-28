@@ -21,7 +21,7 @@ export const CommentForm = ({ user, createComment }) => {
         ></textarea>
       </div>
       <div className='card-footer'>
-        {user.picture && (
+        {user && (
           <>
             <img src={user.picture} className='comment-author-img' />
           </>

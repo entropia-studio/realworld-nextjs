@@ -1,14 +1,7 @@
 import Link from 'next/link';
 
-export const Comment = ({
-  id,
-  description,
-  author,
-  createdAt,
-  updatedAt,
-  deleteComment,
-  user,
-}) => {
+export const Comment = ({ comment, deleteComment, user }) => {
+  const { id, description, author, createdAt, updatedAt } = comment;
   const { name, image } = author;
 
   const onDeleteComment = () => {

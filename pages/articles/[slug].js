@@ -169,18 +169,15 @@ export default function Article({ article, comments }) {
                   createComment={createComment}
                 ></CommentForm>
               )}
-              {commentList?.length ? (
+              {commentList?.length &&
                 commentList.map((comment) => (
                   <Comment
                     key={comment.id}
-                    {...comment}
+                    comment={comment}
                     deleteComment={deleteComment}
                     user={user}
                   />
-                ))
-              ) : (
-                <div className='mt-2'></div>
-              )}
+                ))}
             </div>
           </div>
         </div>
