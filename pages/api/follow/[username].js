@@ -1,7 +1,11 @@
 import { documentToHtmlString } from '@contentful/rich-text-html-renderer';
 import { contentfulClient } from '../../../contentful';
-
 import { getSession, withApiAuthRequired } from '@auth0/nextjs-auth0';
+import {
+  getEntryById,
+  findUserIdByEmail,
+  publishEntry,
+} from '../utils/contentful';
 
 export default withApiAuthRequired(async function handler(req, res) {
   const query = {
@@ -65,9 +69,17 @@ const managePostDelete = async (req, entryId, userEmail) => {
       followers,
     };
   } else if (method === 'DELETE') {
-    const followers = userEntry.fields.followers['en-US']?.filter(
-      (follower) => follower.sys.id !== userId
-    );
+    const followers = userEntry.fields.followers['en-US']
+      .map((follower) => {
+        return {
+          sys: {
+            type: 'Link',
+            linkType: 'Entry',
+            id: follower.sys.id,
+          },
+        };
+      })
+      .filter((follower) => follower.sys.id !== userId);
     userEntry.fields.followers['en-US'] = followers;
   }
 
