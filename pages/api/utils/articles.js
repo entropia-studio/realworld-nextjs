@@ -93,11 +93,7 @@ export const getTagsForArticle = async (articleTagList) => {
 export const getMinifiedArticle = (article, session) => {
   const { slug, title, description, body, user, favorites } = article.fields;
   const { createdAt, updatedAt } = article.sys;
-  const tagList = article.metadata.tags.map((tag) => {
-    return {
-      name: tag.name,
-    };
-  });
+  const tagList = article.metadata.tags?.map((tag) => tag.sys.id);
 
   const articleMinified = {
     slug,
