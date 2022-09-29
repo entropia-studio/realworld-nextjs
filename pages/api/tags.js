@@ -1,15 +1,10 @@
 import { contentfulClient } from '../../contentful';
 
 export default async function handler(req, res) {
-  const query = {
-    content_type: 'realTag',
-    include: 10,
-  };
-
   try {
     const tags = await (
-      await contentfulClient.getEntries(query)
-    ).items.map((tagEntry) => tagEntry.fields.name);
+      await contentfulClient.getTags()
+    ).items.map((tagEntry) => tagEntry.name);
 
     res.status(200).json({
       tags: tags,
