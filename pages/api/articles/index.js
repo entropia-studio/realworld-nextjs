@@ -32,12 +32,7 @@ export default async function handler(req, res) {
       const { slug, title, description, body, user, favorites } =
         article.fields;
       const { createdAt, updatedAt } = article.sys;
-      const tagList =
-        article.metadata.tags?.map((tag) => {
-          return {
-            name: tag.fields.name,
-          };
-        }) ?? null;
+      const tagList = article.metadata?.tags?.map((tag) => tag.sys.id);
       const author = getAuthor(user, session);
       const id = article.sys.id;
       return {
