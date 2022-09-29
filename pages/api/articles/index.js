@@ -1,8 +1,8 @@
-import { contentfulClient } from '../../contentful';
+import { contentfulClient } from '../../../contentful';
 import { documentToHtmlString } from '@contentful/rich-text-html-renderer';
 import { formatDateAndTime } from '@contentful/f36-components';
 import { getSession } from '@auth0/nextjs-auth0';
-import { getAuthor, getFavoritesCount } from './utils/articles';
+import { createArticle, getAuthor, getFavoritesCount } from '../utils/articles';
 
 export default async function handler(req, res) {
   const query = {
@@ -10,19 +10,34 @@ export default async function handler(req, res) {
     include: 10,
   };
 
+  const { method } = req;
+
   try {
     const session = await getSession(req, res);
+
+    if (method === 'POST') {
+      if (!session) {
+        throw new Error('User not logged');
+      }
+      const article = await createArticle(
+        session.user,
+        JSON.parse(req.body).article
+      );
+      return res.status(200).json(article);
+    }
+
     const articles = await (
       await contentfulClient.getEntries(query)
     ).items.map((article) => {
-      const { slug, title, description, body, tags, user, favorites } =
+      const { slug, title, description, body, user, favorites } =
         article.fields;
       const { createdAt, updatedAt } = article.sys;
-      const tagList = tags.map((tag) => {
-        return {
-          name: tag.fields.name,
-        };
-      });
+      const tagList =
+        article.metadata.tags?.map((tag) => {
+          return {
+            name: tag.fields.name,
+          };
+        }) ?? null;
       const author = getAuthor(user, session);
       const id = article.sys.id;
       return {

@@ -45,7 +45,7 @@ export default function Home({ tags, articles }) {
 }
 
 export async function getStaticProps() {
-  const tags = (await getTags()).tags;
+  const tags = (await getTags()).tags ?? null;
   const articles = (await getArticles()).articles;
   return {
     props: { tags, articles },
