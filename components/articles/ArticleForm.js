@@ -1,12 +1,10 @@
+import { convert } from 'html-to-text';
 import React, { useState } from 'react';
-import { removeTags } from '../../lib/util';
 
 export const ArticleForm = ({ article, onNewArticle, onUpdateArticle }) => {
   const [title, setTitle] = useState(article?.title);
-  const [description, setDescription] = useState(
-    removeTags(article?.description)
-  );
-  const [body, setBody] = useState(removeTags(article?.body));
+  const [description, setDescription] = useState(convert(article?.description));
+  const [body, setBody] = useState(convert(article?.body));
   const [tags, setTags] = useState(article?.tagList?.toString());
 
   const handleSubmit = async (e) => {
