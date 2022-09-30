@@ -1,15 +1,69 @@
 import { documentToHtmlString } from '@contentful/rich-text-html-renderer';
 import { formatDateAndTime } from '@contentful/f36-components';
 import { getCommentsByArticle } from './comments';
-import { findUserIdByEmail, getRichText, publishEntry } from './contentful';
+import {
+  deleteEntryById,
+  findArticleIdBySlug,
+  findUserIdByEmail,
+  getEntryById,
+  getRichText,
+  publishEntry,
+} from './contentful';
 import { contentfulManagementEnvironment } from '../../../contentful/management';
 import { contentfulClient } from '../../../contentful';
 import { createTag } from './tags';
 import slugify from 'slugify';
 
 export const createArticle = async (user, article) => {
+  const articleJson = await getArticleToContentful(user, article);
+
+  const articleEntry = await (
+    await contentfulManagementEnvironment()
+  ).createEntry('realArticle', articleJson);
+
+  await publishEntry(articleEntry.sys.id);
+
+  return getArticleCreateUpdateResponse(articleJson);
+};
+
+export const updateArticle = async (user, slug, article) => {
+  const articleJson = await getArticleToContentful(user, article);
+
+  const articleId = await findArticleIdBySlug(slug);
+
+  const articleEntry = await getEntryById(articleId);
+
+  articleEntry.fields = { ...articleJson.fields };
+  articleEntry.metadata = { ...articleJson.metadata };
+
+  await articleEntry.update();
+  await publishEntry(articleId);
+
+  return getArticleCreateUpdateResponse(articleJson);
+};
+
+export const deleteArticle = async (slug) => {
+  const articleId = await findArticleIdBySlug(slug);
+  const articleEntry = await getEntryById(articleId);
+  await articleEntry.unpublish();
+  await deleteEntryById(articleId);
+  return {};
+};
+
+const getArticleCreateUpdateResponse = (articleContentful) => {
+  const article = {
+    title: articleContentful.fields.title['en-US'],
+    description: articleContentful.fields.description['en-US'],
+    body: articleContentful.fields.body['en-US'],
+    slug: articleContentful.fields.slug['en-US'],
+    tagList: articleContentful.metadata.tags,
+  };
+  return article;
+};
+
+const getArticleToContentful = async (user, article) => {
   const userId = await findUserIdByEmail(user.email);
-  const tagList = getTagList(article.tags);
+  const tagList = getTagList(article.tags?.trim());
   const tags = await getTagsForArticle(tagList);
   const { title, description, body } = article;
   const slug = slugify(title);
@@ -34,26 +88,11 @@ export const createArticle = async (user, article) => {
       },
     },
   };
-
-  const articleEntry = await (
-    await contentfulManagementEnvironment()
-  ).createEntry('realArticle', articleJson);
-
-  await publishEntry(articleEntry.sys.id);
-
-  return {
-    article: {
-      title,
-      description,
-      body,
-      slug,
-      tagList,
-    },
-  };
+  return articleJson;
 };
 
 const getTagList = (tagStr) => {
-  if (tagStr.trim().length === 0) {
+  if (tagStr?.length === 0) {
     return null;
   }
   return tagStr

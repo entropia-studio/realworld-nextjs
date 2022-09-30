@@ -27,6 +27,15 @@ export const findUserIdByEmail = async (email) => {
   const userEntries = await contentfulClient.getEntries(query);
   return userEntries.items[0].sys.id;
 };
+export const findArticleIdBySlug = async (slug) => {
+  const query = {
+    content_type: 'realArticle',
+    include: 10,
+    ['fields.slug']: slug,
+  };
+  const articleEntries = await contentfulClient.getEntries(query);
+  return articleEntries.items[0].sys.id;
+};
 
 export const getRichText = (text) => {
   const richTextDocument = {

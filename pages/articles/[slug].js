@@ -7,6 +7,8 @@ import { Comment } from '../../components/Comment';
 import { API_URL } from '../../lib/api';
 import { useState, useEffect } from 'react';
 import { CommentForm } from '../../components/articles/comments/CommentForm';
+import FollowFavorite from '../../components/articles/FollowFavorite';
+import EditDeleteArticle from '../../components/articles/EditDeleteArticle';
 
 export default function Article({ article, comments }) {
   const router = useRouter();
@@ -26,8 +28,15 @@ export default function Article({ article, comments }) {
     setProfile(profileJson);
   };
 
-  const { title, description, updatedAt, createdAt, body, favoritesCount } =
-    article;
+  const {
+    title,
+    description,
+    updatedAt,
+    createdAt,
+    body,
+    favoritesCount,
+    slug,
+  } = article;
 
   const { username, image } = article.author;
 
@@ -70,11 +79,16 @@ export default function Article({ article, comments }) {
     setComments(commentList.filter((comment) => comment.id !== id));
   };
 
-  const getFollowText = () => {
-    if (!user) {
-      return 'Follow';
-    }
-    return profile?.following ? 'Unfollow' : 'Follow';
+  const editArticle = async () => {
+    router.push(`../editor/${slug}`);
+  };
+
+  const deleteArticle = async () => {
+    const options = {
+      method: 'DELETE',
+    };
+    await fetch(`${API_URL}/articles/${article.slug}`, options);
+    router.push('/');
   };
 
   return (
@@ -95,20 +109,20 @@ export default function Article({ article, comments }) {
                   {updatedAt ? updatedAt : createdAt}
                 </span>
               </div>
-              <button
-                className='btn btn-sm btn-outline-secondary'
-                onClick={() => manageAuthorSubscription(profile.following)}
-              >
-                <i className='ion-plus-round'></i>
-                &nbsp; {getFollowText()} {username}{' '}
-                <span className='counter'></span>
-              </button>
-              &nbsp;&nbsp;
-              <button className='btn btn-sm btn-outline-primary'>
-                <i className='ion-heart'></i>
-                &nbsp; Favorite Post{' '}
-                <span className='counter'>({favoritesCount})</span>
-              </button>
+              {user?.nickname !== article.author.username ? (
+                <FollowFavorite
+                  manageAuthorSubscription={manageAuthorSubscription}
+                  profile={profile}
+                  favoritesCount={favoritesCount}
+                  user={user}
+                  username={username}
+                />
+              ) : (
+                <EditDeleteArticle
+                  deleteArticle={deleteArticle}
+                  editArticle={editArticle}
+                />
+              )}
             </div>
           </div>
         </div>
@@ -145,19 +159,20 @@ export default function Article({ article, comments }) {
                   {updatedAt ? updatedAt : createdAt}
                 </span>
               </div>
-              <button
-                className='btn btn-sm btn-outline-secondary'
-                onClick={() => manageAuthorSubscription(profile.following)}
-              >
-                <i className='ion-plus-round'></i>
-                &nbsp; {getFollowText()} {username}
-              </button>
-              &nbsp;
-              <button className='btn btn-sm btn-outline-primary'>
-                <i className='ion-heart'></i>
-                &nbsp; Favorite Post{' '}
-                <span className='counter'>({favoritesCount})</span>
-              </button>
+              {user?.nickname !== article.author.username ? (
+                <FollowFavorite
+                  manageAuthorSubscription={manageAuthorSubscription}
+                  profile={profile}
+                  favoritesCount={favoritesCount}
+                  user={user}
+                  username={username}
+                />
+              ) : (
+                <EditDeleteArticle
+                  deleteArticle={deleteArticle}
+                  editArticle={editArticle}
+                />
+              )}
             </div>
           </div>
 

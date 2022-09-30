@@ -7,6 +7,8 @@ import {
   deleteComment,
 } from '../utils/comments';
 
+import { updateArticle, deleteArticle } from '../utils/articles';
+
 export default async function handler(req, res) {
   const slug = req.query.slug[0];
   const action = req.query.slug?.length > 1 ? req.query.slug[1] : undefined;
@@ -21,9 +23,10 @@ export default async function handler(req, res) {
     const session = await getSession(req, res);
     const userSession = session ? session.user : undefined;
     const article = await (await contentfulClient.getEntries(query)).items[0];
+    const { method } = req;
+    let articleResponse = getMinifiedArticle(article, session);
 
     if (action === 'comments') {
-      const { method } = req;
       let payload;
       switch (method) {
         case 'GET':
@@ -48,8 +51,29 @@ export default async function handler(req, res) {
       }
       return res.status(200).json(payload);
     }
-    const articleMinified = getMinifiedArticle(article, session);
-    res.status(200).json({ article: articleMinified });
+
+    if (method === 'PUT' || method === 'DELETE') {
+      if (!session) {
+        throw new Error('User not logged');
+      }
+      switch (method) {
+        case 'PUT':
+          if (!session) {
+            throw new Error('User not logged');
+          }
+          articleResponse = await updateArticle(
+            session.user,
+            slug,
+            JSON.parse(req.body).article
+          );
+          break;
+        case 'DELETE':
+          articleResponse = await deleteArticle(slug);
+          break;
+      }
+    }
+
+    res.status(200).json({ article: articleResponse });
   } catch (error) {
     res.status(422).json({
       errors: {
