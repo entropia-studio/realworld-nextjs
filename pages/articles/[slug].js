@@ -1,12 +1,10 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useUser } from '@auth0/nextjs-auth0';
-import useSWR from 'swr';
 import { getArticleBySlug, getArticlePaths, getComments } from '../../lib/api';
 import { Layout } from '../../components/Layout';
 import { useState } from 'react';
 import { API_URL } from '../../lib/api';
-import { fetcher } from '../../lib/util';
 import { Comment } from '../../components/Comment';
 import { CommentForm } from '../../components/articles/comments/CommentForm';
 import FollowAuthor from '../../components/articles/FollowAuthor';
@@ -25,13 +23,10 @@ export default function Article({ article, comments }) {
   } = article;
 
   const [favoritesTotal, setFavoritesTotal] = useState(favoritesCount);
-  const [isFavoriteButtonEnabled, setIsFavoriteButtonEnabled] = useState(false);
+  const [isFavoriteButtonDisabled, setIsFavoriteButtonDisabled] =
+    useState(false);
   const [isFollowButtonDisabled, setIsFollowButtonDisabled] = useState(false);
 
-  const { data: profileData, error } = useSWR(
-    `${API_URL}/profiles/${article.author.username}`,
-    fetcher
-  );
   const router = useRouter();
   const { user } = useUser();
 
@@ -56,7 +51,6 @@ export default function Article({ article, comments }) {
       router.push('/api/auth/login');
       return;
     }
-    setIsFavoriteButtonEnabled(true);
     const options = {
       method: favorite ? 'DELETE' : 'POST',
     };
@@ -64,9 +58,10 @@ export default function Article({ article, comments }) {
     const getFavoritesTotal = (favoritesTotal) =>
       favorite ? favoritesTotal - 1 : favoritesTotal + 1;
 
+    setIsFavoriteButtonDisabled(true);
     await fetch(`/api/articles/${slug}/favorite`, options);
     setFavoritesTotal(getFavoritesTotal(favoritesTotal));
-    setIsFavoriteButtonEnabled(false);
+    setIsFavoriteButtonDisabled(false);
   };
 
   const createComment = async (payload) => {
@@ -137,7 +132,7 @@ export default function Article({ article, comments }) {
                     slug={slug}
                     manageFavorite={manageFavorite}
                     favoritesTotal={favoritesTotal}
-                    isFavoriteButtonEnabled={isFavoriteButtonEnabled}
+                    isFavoriteButtonDisabled={isFavoriteButtonDisabled}
                   />
                 </>
               ) : (
@@ -194,7 +189,7 @@ export default function Article({ article, comments }) {
                     slug={slug}
                     manageFavorite={manageFavorite}
                     favoritesTotal={favoritesTotal}
-                    isFavoriteButtonEnabled={isFavoriteButtonEnabled}
+                    isFavoriteButtonDisabled={isFavoriteButtonDisabled}
                   />
                 </>
               ) : (

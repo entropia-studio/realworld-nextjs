@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useSWRConfig } from 'swr';
 import { useFollowAuthor } from '../../hooks/useFollowAuthor';
 
 export default function FollowAuthor({
@@ -11,16 +11,13 @@ export default function FollowAuthor({
     [false, 'Follow'],
   ]);
 
+  const { mutate } = useSWRConfig();
+
   const { followedAuthor } = useFollowAuthor(username);
-  const [isFollowed, setIsFollowed] = useState(followedAuthor ?? false);
 
-  useEffect(() => {
-    setIsFollowed(followedAuthor);
-  }, [followedAuthor]);
-
-  const onClickButton = () => {
-    setIsFollowed(!isFollowed);
-    manageAuthorSubscription(isFollowed);
+  const onClickButton = async () => {
+    await manageAuthorSubscription(followedAuthor);
+    mutate(`../api/profiles/${username}`);
   };
 
   return (
@@ -31,7 +28,7 @@ export default function FollowAuthor({
         disabled={isFollowButtonDisabled}
       >
         <i className='ion-plus-round'></i>
-        &nbsp; {followMsgMap.get(isFollowed)} {username}{' '}
+        &nbsp; {followMsgMap.get(followedAuthor)} {username}{' '}
         <span className='counter'></span>
       </button>
       &nbsp;&nbsp;

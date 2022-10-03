@@ -1,26 +1,22 @@
-import { useEffect, useState } from 'react';
 import { useFavoriteArticle } from '../../hooks/useFavoriteArticle';
+import { useSWRConfig } from 'swr';
 
 export const FavoriteArticle = ({
   slug,
   manageFavorite,
   favoritesTotal,
-  isFavoritesLoading,
+  isFavoriteButtonDisabled,
 }) => {
+  const { mutate } = useSWRConfig();
   const favoviteMsgMap = new Map([
     [true, 'Unfavorite'],
     [false, 'Favorite'],
   ]);
-  const { favoriteArticle } = useFavoriteArticle(slug);
-  const [isFavorite, setIsFavorite] = useState(favoriteArticle ?? false);
+  const { favoritedArticle } = useFavoriteArticle(slug);
 
-  useEffect(() => {
-    setIsFavorite(favoriteArticle);
-  }, [favoriteArticle]);
-
-  const onClickButton = () => {
-    setIsFavorite(!isFavorite);
-    manageFavorite(isFavorite);
+  const onClickButton = async () => {
+    await manageFavorite(favoritedArticle);
+    mutate(`../api/articles/${slug}/favorite`);
   };
 
   return (
@@ -28,10 +24,10 @@ export const FavoriteArticle = ({
       <button
         className='btn btn-sm btn-primary'
         onClick={onClickButton}
-        disabled={isFavoritesLoading}
+        disabled={isFavoriteButtonDisabled}
       >
         <i className='ion-heart'></i>
-        &nbsp; {favoviteMsgMap.get(isFavorite)} article{' '}
+        &nbsp; {favoviteMsgMap.get(favoritedArticle)} article{' '}
         <span className='counter'>({favoritesTotal})</span>
       </button>
     </>
