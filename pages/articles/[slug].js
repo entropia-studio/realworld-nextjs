@@ -1,15 +1,15 @@
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useUser } from '@auth0/nextjs-auth0';
+import useSWR from 'swr';
 import { getArticleBySlug, getArticlePaths, getComments } from '../../lib/api';
-import Link from 'next/link';
 import { Layout } from '../../components/Layout';
 import { useState } from 'react';
-import useSWR from 'swr';
 import { API_URL } from '../../lib/api';
 import { fetcher } from '../../lib/util';
 import { Comment } from '../../components/Comment';
 import { CommentForm } from '../../components/articles/comments/CommentForm';
-import FollowFavorite from '../../components/articles/FollowFavorite';
+import FollowAuthor from '../../components/articles/FollowAuthor';
 import EditDeleteArticle from '../../components/articles/EditDeleteArticle';
 import { FavoriteArticle } from '../../components/articles/FavoriteArticle';
 
@@ -25,12 +25,8 @@ export default function Article({ article, comments }) {
   } = article;
 
   const [favoritesTotal, setFavoritesTotal] = useState(favoritesCount);
-  const [isFavoriteLoading, setIsFavoriteLoading] = useState(false);
-
-  const { data: articleFavoritedData } = useSWR(
-    `${API_URL}/articles/${slug}/favorite`,
-    fetcher
-  );
+  const [isFavoriteButtonEnabled, setIsFavoriteButtonEnabled] = useState(false);
+  const [isFollowButtonDisabled, setIsFollowButtonDisabled] = useState(false);
 
   const { data: profileData, error } = useSWR(
     `${API_URL}/profiles/${article.author.username}`,
@@ -38,21 +34,8 @@ export default function Article({ article, comments }) {
   );
   const router = useRouter();
   const { user } = useUser();
-  // const [profile, setProfile] = useState();
-  // const [favorited, setFavorited] = useState(false);
+
   const [commentList, setComments] = useState(comments);
-
-  const getProfile = async () => {
-    const profileResp = await fetch(
-      `${API_URL}/profiles/${article.author.username}`
-    );
-    const profileJson = await profileResp.json();
-    setProfile(profileJson);
-  };
-
-  const favorited = articleFavoritedData?.article?.favorited;
-  const profile = profileData;
-
   const { username, image } = article.author;
 
   const manageAuthorSubscription = async (following) => {
@@ -63,9 +46,9 @@ export default function Article({ article, comments }) {
     const options = {
       method: following ? 'DELETE' : 'POST',
     };
-    const profileResp = await fetch(`/api/follow/${username}`, options);
-    const profileJson = await profileResp.json();
-    setProfile(profileJson);
+    setIsFollowButtonDisabled(true);
+    await fetch(`/api/follow/${username}`, options);
+    setIsFollowButtonDisabled(false);
   };
 
   const manageFavorite = async (favorite) => {
@@ -73,13 +56,17 @@ export default function Article({ article, comments }) {
       router.push('/api/auth/login');
       return;
     }
-    setIsFavoriteLoading(true);
+    setIsFavoriteButtonEnabled(true);
     const options = {
       method: favorite ? 'DELETE' : 'POST',
     };
+
+    const getFavoritesTotal = (favoritesTotal) =>
+      favorite ? favoritesTotal - 1 : favoritesTotal + 1;
+
     await fetch(`/api/articles/${slug}/favorite`, options);
-    setFavoritesTotal(favorite ? favoritesTotal - 1 : favoritesTotal + 1);
-    setIsFavoriteLoading(false);
+    setFavoritesTotal(getFavoritesTotal(favoritesTotal));
+    setIsFavoriteButtonEnabled(false);
   };
 
   const createComment = async (payload) => {
@@ -140,19 +127,17 @@ export default function Article({ article, comments }) {
               </div>
               {user?.nickname !== article.author.username ? (
                 <>
-                  <FollowFavorite
+                  <FollowAuthor
                     manageAuthorSubscription={manageAuthorSubscription}
-                    profile={profile}
-                    user={user}
                     username={username}
-                    favorited={favorited}
+                    isFollowButtonDisabled={isFollowButtonDisabled}
                   />
                   &nbsp;&nbsp;
                   <FavoriteArticle
                     slug={slug}
                     manageFavorite={manageFavorite}
                     favoritesTotal={favoritesTotal}
-                    isFavoritesLoading={isFavoriteLoading}
+                    isFavoriteButtonEnabled={isFavoriteButtonEnabled}
                   />
                 </>
               ) : (
@@ -199,19 +184,17 @@ export default function Article({ article, comments }) {
               </div>
               {user?.nickname !== article.author.username ? (
                 <>
-                  <FollowFavorite
-                    manageAuthorSubscription={manageAuthorSubscription}
-                    profile={profile}
-                    user={user}
+                  <FollowAuthor
                     username={username}
-                    favorited={favorited}
+                    manageAuthorSubscription={manageAuthorSubscription}
+                    isFollowButtonDisabled={isFollowButtonDisabled}
                   />
                   &nbsp;&nbsp;
                   <FavoriteArticle
                     slug={slug}
                     manageFavorite={manageFavorite}
                     favoritesTotal={favoritesTotal}
-                    isFavoritesLoading={isFavoriteLoading}
+                    isFavoriteButtonEnabled={isFavoriteButtonEnabled}
                   />
                 </>
               ) : (
