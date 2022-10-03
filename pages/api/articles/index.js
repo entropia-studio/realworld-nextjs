@@ -5,12 +5,34 @@ import { getSession } from '@auth0/nextjs-auth0';
 import { createArticle, getAuthor, getFavoritesCount } from '../utils/articles';
 
 export default async function handler(req, res) {
-  const query = {
+  const { method, query } = req;
+
+  let articlesQuery = {
     content_type: 'realArticle',
     include: 10,
   };
 
-  const { method } = req;
+  const queryParams = Object.keys(query);
+
+  if (queryParams.length) {
+    if (query['tag']) {
+      articlesQuery = {
+        ...articlesQuery,
+        ['metadata.tags.sys.id[all]']: query['tag'],
+      };
+    } else if (query['author']) {
+      articlesQuery = {
+        ...articlesQuery,
+        ['fields.user.fields.username']: query['author'],
+        ['fields.user.sys.contentType.sys.id']: 'realUser',
+      };
+    } else if (query['favorited']) {
+      articlesQuery = {
+        ...articlesQuery,
+        ['fields.favorites.sys.id[in]']: query['favorited'],
+      };
+    }
+  }
 
   try {
     const session = await getSession(req, res);
@@ -27,7 +49,7 @@ export default async function handler(req, res) {
     }
 
     const articles = await (
-      await contentfulClient.getEntries(query)
+      await contentfulClient.getEntries(articlesQuery)
     ).items.map((article) => {
       const { slug, title, description, body, user, favorites } =
         article.fields;
