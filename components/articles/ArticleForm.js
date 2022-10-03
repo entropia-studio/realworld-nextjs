@@ -6,6 +6,7 @@ export const ArticleForm = ({ article, onNewArticle, onUpdateArticle }) => {
   const [description, setDescription] = useState(convert(article?.description));
   const [body, setBody] = useState(convert(article?.body));
   const [tags, setTags] = useState(article?.tagList?.toString());
+  const [submitDisabled, setSubmitDisabled] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -16,7 +17,7 @@ export const ArticleForm = ({ article, onNewArticle, onUpdateArticle }) => {
       body,
       tags,
     };
-
+    setSubmitDisabled(true);
     if (article?.title) {
       onUpdateArticle(articlePayload);
     } else {
@@ -75,6 +76,7 @@ export const ArticleForm = ({ article, onNewArticle, onUpdateArticle }) => {
                 <button
                   className='btn btn-lg pull-xs-right btn-primary'
                   type='submit'
+                  disabled={submitDisabled}
                 >
                   Publish Article
                 </button>

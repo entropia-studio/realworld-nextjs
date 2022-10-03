@@ -3,31 +3,17 @@ import { useUser } from '@auth0/nextjs-auth0';
 import { getArticleBySlug, getArticlePaths, getComments } from '../../lib/api';
 import Link from 'next/link';
 import { Layout } from '../../components/Layout';
-import { Comment } from '../../components/Comment';
+import { useState } from 'react';
+import useSWR from 'swr';
 import { API_URL } from '../../lib/api';
-import { useState, useEffect } from 'react';
+import { fetcher } from '../../lib/util';
+import { Comment } from '../../components/Comment';
 import { CommentForm } from '../../components/articles/comments/CommentForm';
 import FollowFavorite from '../../components/articles/FollowFavorite';
 import EditDeleteArticle from '../../components/articles/EditDeleteArticle';
+import { FavoriteArticle } from '../../components/articles/FavoriteArticle';
 
 export default function Article({ article, comments }) {
-  const router = useRouter();
-  const { user } = useUser();
-  const [profile, setProfile] = useState();
-  const [commentList, setComments] = useState(comments);
-
-  useEffect(() => {
-    getProfile();
-  }, []);
-
-  const getProfile = async () => {
-    const profileResp = await fetch(
-      `${API_URL}/profiles/${article.author.username}`
-    );
-    const profileJson = await profileResp.json();
-    setProfile(profileJson);
-  };
-
   const {
     title,
     description,
@@ -37,6 +23,35 @@ export default function Article({ article, comments }) {
     favoritesCount,
     slug,
   } = article;
+
+  const [favoritesTotal, setFavoritesTotal] = useState(favoritesCount);
+  const [isFavoriteLoading, setIsFavoriteLoading] = useState(false);
+
+  const { data: articleFavoritedData } = useSWR(
+    `${API_URL}/articles/${slug}/favorite`,
+    fetcher
+  );
+
+  const { data: profileData, error } = useSWR(
+    `${API_URL}/profiles/${article.author.username}`,
+    fetcher
+  );
+  const router = useRouter();
+  const { user } = useUser();
+  // const [profile, setProfile] = useState();
+  // const [favorited, setFavorited] = useState(false);
+  const [commentList, setComments] = useState(comments);
+
+  const getProfile = async () => {
+    const profileResp = await fetch(
+      `${API_URL}/profiles/${article.author.username}`
+    );
+    const profileJson = await profileResp.json();
+    setProfile(profileJson);
+  };
+
+  const favorited = articleFavoritedData?.article?.favorited;
+  const profile = profileData;
 
   const { username, image } = article.author;
 
@@ -51,6 +66,20 @@ export default function Article({ article, comments }) {
     const profileResp = await fetch(`/api/follow/${username}`, options);
     const profileJson = await profileResp.json();
     setProfile(profileJson);
+  };
+
+  const manageFavorite = async (favorite) => {
+    if (!user) {
+      router.push('/api/auth/login');
+      return;
+    }
+    setIsFavoriteLoading(true);
+    const options = {
+      method: favorite ? 'DELETE' : 'POST',
+    };
+    await fetch(`/api/articles/${slug}/favorite`, options);
+    setFavoritesTotal(favorite ? favoritesTotal - 1 : favoritesTotal + 1);
+    setIsFavoriteLoading(false);
   };
 
   const createComment = async (payload) => {
@@ -110,13 +139,22 @@ export default function Article({ article, comments }) {
                 </span>
               </div>
               {user?.nickname !== article.author.username ? (
-                <FollowFavorite
-                  manageAuthorSubscription={manageAuthorSubscription}
-                  profile={profile}
-                  favoritesCount={favoritesCount}
-                  user={user}
-                  username={username}
-                />
+                <>
+                  <FollowFavorite
+                    manageAuthorSubscription={manageAuthorSubscription}
+                    profile={profile}
+                    user={user}
+                    username={username}
+                    favorited={favorited}
+                  />
+                  &nbsp;&nbsp;
+                  <FavoriteArticle
+                    slug={slug}
+                    manageFavorite={manageFavorite}
+                    favoritesTotal={favoritesTotal}
+                    isFavoritesLoading={isFavoriteLoading}
+                  />
+                </>
               ) : (
                 <EditDeleteArticle
                   deleteArticle={deleteArticle}
@@ -160,13 +198,22 @@ export default function Article({ article, comments }) {
                 </span>
               </div>
               {user?.nickname !== article.author.username ? (
-                <FollowFavorite
-                  manageAuthorSubscription={manageAuthorSubscription}
-                  profile={profile}
-                  favoritesCount={favoritesCount}
-                  user={user}
-                  username={username}
-                />
+                <>
+                  <FollowFavorite
+                    manageAuthorSubscription={manageAuthorSubscription}
+                    profile={profile}
+                    user={user}
+                    username={username}
+                    favorited={favorited}
+                  />
+                  &nbsp;&nbsp;
+                  <FavoriteArticle
+                    slug={slug}
+                    manageFavorite={manageFavorite}
+                    favoritesTotal={favoritesTotal}
+                    isFavoritesLoading={isFavoriteLoading}
+                  />
+                </>
               ) : (
                 <EditDeleteArticle
                   deleteArticle={deleteArticle}

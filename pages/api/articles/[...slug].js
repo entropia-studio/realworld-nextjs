@@ -8,6 +8,11 @@ import {
 } from '../utils/comments';
 
 import { updateArticle, deleteArticle } from '../utils/articles';
+import {
+  addFavorite,
+  deleteFavorite,
+  isArticleFavorited,
+} from '../utils/favorites';
 
 export default async function handler(req, res) {
   const slug = req.query.slug[0];
@@ -23,8 +28,14 @@ export default async function handler(req, res) {
     const session = await getSession(req, res);
     const userSession = session ? session.user : undefined;
     const article = await (await contentfulClient.getEntries(query)).items[0];
+    let articleResponse = await getMinifiedArticle(article, session);
     const { method } = req;
-    let articleResponse = getMinifiedArticle(article, session);
+
+    if (method !== 'GET') {
+      if (!userSession) {
+        throw new Error('User not logged');
+      }
+    }
 
     if (action === 'comments') {
       let payload;
@@ -35,16 +46,10 @@ export default async function handler(req, res) {
           };
           break;
         case 'POST':
-          if (!userSession) {
-            throw new Error('User not logged');
-          }
           const body = JSON.parse(req.body);
           payload = await postComment(userSession, article, body.comment.body);
           break;
         case 'DELETE':
-          if (!userSession) {
-            throw new Error('User not logged');
-          }
           const idComment = req.query.slug[2];
           payload = await deleteComment(article, idComment);
           break;
@@ -52,25 +57,38 @@ export default async function handler(req, res) {
       return res.status(200).json(payload);
     }
 
-    if (method === 'PUT' || method === 'DELETE') {
-      if (!session) {
-        throw new Error('User not logged');
-      }
+    if (action === 'favorite') {
       switch (method) {
-        case 'PUT':
-          if (!session) {
-            throw new Error('User not logged');
-          }
-          articleResponse = await updateArticle(
-            session.user,
-            slug,
-            JSON.parse(req.body).article
+        case 'GET':
+          const isFavorited = await isArticleFavorited(
+            article.fields?.favorites,
+            session?.user?.email
           );
+          articleResponse = {
+            favorited: isFavorited,
+          };
+          break;
+        case 'POST':
+          articleResponse = await addFavorite(slug, session.user?.email);
           break;
         case 'DELETE':
-          articleResponse = await deleteArticle(slug);
+          articleResponse = await deleteFavorite(slug, session.user?.email);
           break;
       }
+      return res.status(200).json({ article: articleResponse });
+    }
+
+    switch (method) {
+      case 'POST':
+        articleResponse = await updateArticle(
+          session.user,
+          slug,
+          JSON.parse(req.body).article
+        );
+        break;
+      case 'DELETE':
+        articleResponse = await deleteArticle(slug);
+        break;
     }
 
     res.status(200).json({ article: articleResponse });

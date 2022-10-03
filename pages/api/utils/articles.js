@@ -50,7 +50,7 @@ export const deleteArticle = async (slug) => {
   return {};
 };
 
-const getArticleCreateUpdateResponse = (articleContentful) => {
+export const getArticleCreateUpdateResponse = (articleContentful) => {
   const article = {
     title: articleContentful.fields.title['en-US'],
     description: articleContentful.fields.description['en-US'],
@@ -144,6 +144,7 @@ export const getMinifiedArticle = (article, session) => {
     comments: getCommentsByArticle(article),
     createdAt: formatDateAndTime(createdAt, 'day'),
     updatedAt: formatDateAndTime(updatedAt, 'day'),
+    favorited: false,
     favoritesCount: getFavoritesCount(favorites),
   };
   return articleMinified;

@@ -16,7 +16,7 @@ export default function Editor() {
 
     const articleResp = await fetch(`${API_URL}/articles`, options);
     const articleJson = await articleResp.json();
-    router.push(`../articles/${articleJson.article.slug}`);
+    router.push(`../articles/${articleJson.slug}`);
   };
 
   return (

@@ -5,14 +5,13 @@ import { API_URL } from '../lib/api';
 import { useState } from 'react';
 import useSWR from 'swr';
 import { convert } from 'html-to-text';
-
-const fetcher = (...args) => fetch(...args).then((res) => res.json());
+import { fetcher } from '../lib/util';
 
 export default function Setting({ user }) {
   const { data, error } = useSWR(`${API_URL}/user`, fetcher);
   const [image, setImage] = useState(data?.user.image);
   const [bio, setBio] = useState(convert(data?.user.bio));
-  const [formDisabled, setFormDisabled] = useState(false);
+  const [submitDisabled, setSubmitDisabled] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,10 +25,10 @@ export default function Setting({ user }) {
         },
       }),
     };
-    setFormDisabled(true);
+    setSubmitDisabled(true);
     const userResp = await fetch(`${API_URL}/user`, options);
     const userJson = await userResp.json();
-    setFormDisabled(false);
+    setSubmitDisabled(false);
   };
 
   if (error) return <div>Failed to load</div>;
@@ -73,7 +72,7 @@ export default function Setting({ user }) {
                   </fieldset>
                   <button
                     className='btn btn-lg btn-primary pull-xs-right'
-                    disabled={formDisabled}
+                    disabled={submitDisabled}
                   >
                     Update Settings
                   </button>

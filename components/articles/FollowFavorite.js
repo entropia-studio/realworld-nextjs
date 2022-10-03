@@ -4,8 +4,8 @@ export default function FollowFavorite({
   user,
   manageAuthorSubscription,
   profile,
-  favoritesCount,
   username,
+  favorited,
 }) {
   const getFollowText = () => {
     if (!user) {
@@ -17,17 +17,13 @@ export default function FollowFavorite({
   return (
     <>
       <button
-        className='btn btn-sm btn-outline-secondary'
+        className='btn btn-sm btn-primary'
         onClick={() => manageAuthorSubscription(profile.following)}
       >
         <i className='ion-plus-round'></i>
         &nbsp; {getFollowText()} {username} <span className='counter'></span>
       </button>
       &nbsp;&nbsp;
-      <button className='btn btn-sm btn-outline-primary'>
-        <i className='ion-heart'></i>
-        &nbsp; Favorite Post <span className='counter'>({favoritesCount})</span>
-      </button>
     </>
   );
 }
