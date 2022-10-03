@@ -1,5 +1,6 @@
 import { useFavoriteArticle } from '../../hooks/useFavoriteArticle';
 import { useSWRConfig } from 'swr';
+import { Spinner } from '../Spinner';
 
 export const FavoriteArticle = ({
   slug,
@@ -12,7 +13,11 @@ export const FavoriteArticle = ({
     [true, 'Unfavorite'],
     [false, 'Favorite'],
   ]);
-  const { favoritedArticle } = useFavoriteArticle(slug);
+  const { favoritedArticle, isLoading } = useFavoriteArticle(slug);
+
+  if (isLoading) {
+    return <Spinner />;
+  }
 
   const onClickButton = async () => {
     await manageFavorite(favoritedArticle);
