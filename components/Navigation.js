@@ -1,8 +1,11 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { useUser } from '@auth0/nextjs-auth0';
+import { useUserContentful } from '../hooks/useUserContentful';
 
 export const Navigation = () => {
   const { user } = useUser();
+  const { userContentful } = useUserContentful();
   return (
     <nav className='navbar navbar-light'>
       <div className='container'>
@@ -33,8 +36,9 @@ export const Navigation = () => {
               </li>
               <li className='nav-item'>
                 <Link href={`/@${user.nickname}`}>
-                  <a className='nav-link'>
-                    <i className='ion-gear-a'></i>&nbsp;{user.nickname}
+                  <a className='nav-link' style={{ display: 'flex' }}>
+                    <Image src={userContentful?.image} height='26' width='26' />
+                    &nbsp;{user.nickname}
                   </a>
                 </Link>
               </li>

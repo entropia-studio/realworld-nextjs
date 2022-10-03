@@ -25,6 +25,7 @@ export default withApiAuthRequired(async function handler(req, res) {
 
     res.status(200).json({
       user: {
+        id: user.sys.id,
         username: user.fields.username,
         image: user.fields.image,
         bio: documentToHtmlString(user.fields.bio),

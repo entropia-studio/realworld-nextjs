@@ -30,8 +30,8 @@ export const Comment = ({ comment, deleteComment, user }) => {
         <a className='comment-author'>{name}</a>
         <span className='date-posted'>{updatedAt ? updatedAt : createdAt}</span>
         {isCreatedByUser && (
-          <span class='mod-options'>
-            <i class='ion-trash-a' onClick={onDeleteComment}></i>
+          <span className='mod-options'>
+            <i className='ion-trash-a' onClick={onDeleteComment}></i>
           </span>
         )}
       </div>

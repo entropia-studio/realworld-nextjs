@@ -1,16 +1,17 @@
-import Link from 'next/link';
-import React from 'react';
-
-export const Tags = ({ tags }) => {
+export const Tags = ({ tags, selectTab }) => {
   return (
     <div className='col-md-3'>
       <div className='sidebar'>
         <p>Popular Tags</p>
         <div className='tag-list'>
           {tags.map((tag) => (
-            <Link key={tag} href={`./articles/${tag}`}>
-              <a className='tag-pill tag-default'>{tag}</a>
-            </Link>
+            <a
+              className='tag-pill tag-default'
+              onClick={() => selectTab(tag)}
+              key={tag}
+            >
+              {tag}
+            </a>
           ))}
         </div>
       </div>

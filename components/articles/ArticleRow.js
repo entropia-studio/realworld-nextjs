@@ -5,8 +5,15 @@ import { useUser } from '@auth0/nextjs-auth0';
 import { FavoriteArticleHeart } from './FavoriteArticleHeart';
 
 export const ArticleRow = ({ article }) => {
-  const { title, description, slug, updatedAt, createdAt, favoritesCount } =
-    article;
+  const {
+    title,
+    description,
+    slug,
+    updatedAt,
+    createdAt,
+    favoritesCount,
+    tagList,
+  } = article;
   const { username, image } = article.author;
 
   const { user } = useUser();
@@ -61,6 +68,19 @@ export const ArticleRow = ({ article }) => {
             }}
           />
           <span>Read more...</span>
+          {tagList?.length && (
+            <ul className='tag-list'>
+              {tagList.map((tag) => (
+                <li
+                  key={tag}
+                  className='tag-default tag-pill tag-outline ng-binding ng-scope'
+                  ng-repeat='tag in $ctrl.article.tagList'
+                >
+                  {tag}
+                </li>
+              ))}
+            </ul>
+          )}
         </a>
       </Link>
     </div>
