@@ -32,9 +32,9 @@ export const Navigation = () => {
                 </Link>
               </li>
               <li className='nav-item'>
-                <Link href={`/@${user.name}`}>
+                <Link href={`/@${user.nickname}`}>
                   <a className='nav-link'>
-                    <i className='ion-gear-a'></i>&nbsp;{user.name}
+                    <i className='ion-gear-a'></i>&nbsp;{user.nickname}
                   </a>
                 </Link>
               </li>
