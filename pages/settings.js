@@ -3,14 +3,13 @@ import Link from 'next/link';
 import { withPageAuthRequired } from '@auth0/nextjs-auth0';
 import { API_URL } from '../lib/api';
 import { useState } from 'react';
-import useSWR from 'swr';
 import { convert } from 'html-to-text';
-import { fetcher } from '../lib/util';
+import { useUserContentful } from '../hooks/useUserContentful';
 
 export default function Setting({ user }) {
-  const { data, error } = useSWR(`${API_URL}/user`, fetcher);
-  const [image, setImage] = useState(data?.user.image);
-  const [bio, setBio] = useState(convert(data?.user.bio));
+  const { userContentful, error } = useUserContentful();
+  const [image, setImage] = useState(userContentful?.image);
+  const [bio, setBio] = useState(convert(userContentful?.bio));
   const [submitDisabled, setSubmitDisabled] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -27,12 +26,9 @@ export default function Setting({ user }) {
     };
     setSubmitDisabled(true);
     const userResp = await fetch(`${API_URL}/user`, options);
-    const userJson = await userResp.json();
+    await userResp.json();
     setSubmitDisabled(false);
   };
-
-  if (error) return <div>Failed to load</div>;
-  if (!data) return <div>Loading...</div>;
 
   return (
     <Layout>
