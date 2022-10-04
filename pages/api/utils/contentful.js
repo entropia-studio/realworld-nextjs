@@ -27,6 +27,15 @@ export const findUserIdByEmail = async (email) => {
   const userEntries = await contentfulClient.getEntries(query);
   return userEntries.items[0].sys.id;
 };
+export const findUserIdByUsername = async (username) => {
+  const query = {
+    content_type: 'realUser',
+    include: 10,
+    ['fields.username']: username,
+  };
+  const userEntries = await contentfulClient.getEntries(query);
+  return userEntries.items[0].sys.id;
+};
 export const findArticleIdBySlug = async (slug) => {
   const query = {
     content_type: 'realArticle',

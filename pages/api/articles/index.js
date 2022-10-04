@@ -3,6 +3,7 @@ import { documentToHtmlString } from '@contentful/rich-text-html-renderer';
 import { formatDateAndTime } from '@contentful/f36-components';
 import { getSession } from '@auth0/nextjs-auth0';
 import { createArticle, getAuthor, getFavoritesCount } from '../utils/articles';
+import { findUserIdByUsername } from '../utils/contentful';
 
 export default async function handler(req, res) {
   const { method, query } = req;
@@ -27,9 +28,10 @@ export default async function handler(req, res) {
         ['fields.user.sys.contentType.sys.id']: 'realUser',
       };
     } else if (query['favorited']) {
+      const userId = await findUserIdByUsername(query['favorited']);
       articlesQuery = {
         ...articlesQuery,
-        ['fields.favorites.sys.id[in]']: query['favorited'],
+        ['fields.favorites.sys.id[in]']: userId,
       };
     }
   }

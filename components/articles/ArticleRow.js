@@ -43,11 +43,11 @@ export const ArticleRow = ({ article }) => {
   return (
     <div className='article-preview'>
       <div className='article-meta'>
-        <Link href={`./@${username}`}>
+        <Link href={`/authors/${username}`}>
           <img src={image} />
         </Link>
         <div className='info'>
-          <Link href={`./@${username}`}>
+          <Link href={`/authors/${username}`}>
             <a className='author'>{username}</a>
           </Link>
           <span className='date'>{updatedAt ? updatedAt : createdAt}</span>
@@ -59,7 +59,7 @@ export const ArticleRow = ({ article }) => {
           isFavoriteButtonDisabled={isFavoriteButtonDisabled}
         />
       </div>
-      <Link href={`./articles/${slug}`}>
+      <Link href={`/articles/${slug}`}>
         <a className='preview-link'>
           <h1>{title}</h1>
           <div
