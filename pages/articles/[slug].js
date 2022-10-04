@@ -41,20 +41,20 @@ export default function Article({ article, comments }) {
 
   const manageAuthorSubscription = async (following) => {
     if (!user) {
-      router.push('/api/auth/login');
+      router.push(`${API_URL}/auth/login`);
       return;
     }
     const options = {
       method: following ? 'DELETE' : 'POST',
     };
     setIsFollowButtonDisabled(true);
-    await fetch(`/api/follow/${username}`, options);
+    await fetch(`${API_URL}/follow/${username}`, options);
     setIsFollowButtonDisabled(false);
   };
 
   const manageFavorite = async (favorite) => {
     if (!user) {
-      router.push('/api/auth/login');
+      router.push(`${API_URL}/auth/login`);
       return;
     }
     const options = {
@@ -65,7 +65,7 @@ export default function Article({ article, comments }) {
       favorite ? favoritesTotal - 1 : favoritesTotal + 1;
 
     setIsFavoriteButtonDisabled(true);
-    await fetch(`/api/articles/${slug}/favorite`, options);
+    await fetch(`${API_URL}/articles/${slug}/favorite`, options);
     setFavoritesTotal(getFavoritesTotal(favoritesTotal));
     setIsFavoriteButtonDisabled(false);
   };

@@ -1,6 +1,6 @@
 import { ArticleRow } from '../components/articles/ArticleRow';
 import { Tags } from '../components/Tags';
-import { getTags, getArticles } from '../lib/api';
+import { getTags, getArticles, API_URL } from '../lib/api';
 import { Layout } from '../components/Layout';
 import { useState } from 'react';
 import { useUser } from '@auth0/nextjs-auth0';
@@ -19,7 +19,7 @@ export default function Home({ tags, articles }) {
     const isTagTab = (tab) => tags.some((tag) => tab === tag);
 
     setSelectedTab(tab);
-    let endpoint = `/api/articles`;
+    let endpoint = `${API_URL}/articles`;
     if (tab === YOUR_FEED) {
       endpoint = `${endpoint}/feed`;
     } else if (isTagTab(tab)) {

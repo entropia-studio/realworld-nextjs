@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useUser } from '@auth0/nextjs-auth0';
 import { FavoriteArticleHeart } from './FavoriteArticleHeart';
+import { API_URL } from '../../lib/api';
 
 export const ArticleRow = ({ article }) => {
   const {
@@ -24,7 +25,7 @@ export const ArticleRow = ({ article }) => {
 
   const manageFavorite = async (favorite) => {
     if (!user) {
-      router.push('/api/auth/login');
+      router.push(`${API_URL}/auth/login`);
       return;
     }
     const options = {
@@ -35,7 +36,7 @@ export const ArticleRow = ({ article }) => {
       favorite ? favoritesTotal - 1 : favoritesTotal + 1;
 
     setIsFavoriteButtonDisabled(true);
-    await fetch(`/api/articles/${slug}/favorite`, options);
+    await fetch(`${API_URL}/articles/${slug}/favorite`, options);
     setFavoritesTotal(getFavoritesTotal(favoritesTotal));
     setIsFavoriteButtonDisabled(false);
   };

@@ -17,7 +17,7 @@ export default function FollowAuthor({
 
   const onClickButton = async () => {
     await manageAuthorSubscription(followedAuthor);
-    mutate(`../api/profiles/${username}`);
+    mutate(`${API_URL}/profiles/${username}`);
   };
 
   return (

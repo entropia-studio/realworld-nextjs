@@ -3,7 +3,7 @@ import { API_URL, getArticleBySlug } from '../../lib/api';
 import { Layout } from '../../components/Layout';
 import { ArticleForm } from '../../components/articles/ArticleForm';
 
-export default function Editor({ article }) {
+export default function SlugEditor({ article }) {
   const router = useRouter();
 
   const { slug } = article;

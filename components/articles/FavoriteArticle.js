@@ -21,7 +21,7 @@ export const FavoriteArticle = ({
 
   const onClickButton = async () => {
     await manageFavorite(favoritedArticle);
-    mutate(`../api/articles/${slug}/favorite`);
+    mutate(`${API_URL}/articles/${slug}/favorite`);
   };
 
   return (

@@ -1,4 +1,4 @@
-import Head from 'next/document';
+import Head from 'next/head';
 import { Navigation } from './Navigation';
 
 export const Header = () => {

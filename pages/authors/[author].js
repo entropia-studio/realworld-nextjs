@@ -6,7 +6,7 @@ import { useRouter } from 'next/router';
 import { ArticleRow } from '../../components/articles/ArticleRow';
 import FollowAuthor from '../../components/articles/FollowAuthor';
 import { Layout } from '../../components/Layout';
-import { getAuthorArticles, getProfile } from '../../lib/api';
+import { API_URL, getAuthorArticles, getProfile } from '../../lib/api';
 
 export default function Authors({ articles, profile, author }) {
   const [articlesFiltered, setArticles] = useState(articles);
@@ -22,14 +22,14 @@ export default function Authors({ articles, profile, author }) {
 
   const manageAuthorSubscription = async (following) => {
     if (!user) {
-      router.push('/api/auth/login');
+      router.push(`${API_URL}/auth/login`);
       return;
     }
     const options = {
       method: following ? 'DELETE' : 'POST',
     };
     setIsFollowButtonDisabled(true);
-    await fetch(`/api/follow/${username}`, options);
+    await fetch(`${API_URL}/follow/${username}`, options);
     setIsFollowButtonDisabled(false);
   };
 
@@ -38,7 +38,7 @@ export default function Authors({ articles, profile, author }) {
     if (tab === MY_ARTICLES) {
       setArticles(articles);
     } else if (tab === FAVORITED_ARTICLES) {
-      const endpoint = `/api/articles?favorited=${author}`;
+      const endpoint = `${API_URL}/articles?favorited=${author}`;
       const articlesResponse = await fetch(endpoint);
       const articlesJson = await articlesResponse.json();
       setArticles(articlesJson.articles);
