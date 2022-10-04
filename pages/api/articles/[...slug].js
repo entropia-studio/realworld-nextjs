@@ -79,7 +79,7 @@ export default async function handler(req, res) {
     }
 
     switch (method) {
-      case 'POST':
+      case 'PUT':
         articleResponse = await updateArticle(
           session.user,
           slug,
