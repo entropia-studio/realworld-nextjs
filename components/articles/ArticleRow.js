@@ -74,7 +74,6 @@ export const ArticleRow = ({ article }) => {
                 <li
                   key={tag}
                   className='tag-default tag-pill tag-outline ng-binding ng-scope'
-                  ng-repeat='tag in $ctrl.article.tagList'
                 >
                   {tag}
                 </li>

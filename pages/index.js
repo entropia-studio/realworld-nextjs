@@ -78,10 +78,15 @@ export default function Home({ tags, articles }) {
                     )}
                   </ul>
                 </div>
-                {articlesFiltered?.length &&
+                {articlesFiltered?.length > 0 ? (
                   articlesFiltered?.map((article) => (
                     <ArticleRow article={article} key={article.id} />
-                  ))}
+                  ))
+                ) : (
+                  <div className='row p-t-1' style={{ width: '100%' }}>
+                    <div className='col'>No articles are here... yet</div>
+                  </div>
+                )}
               </div>
               <Tags tags={tags} selectTab={selectTab} />
             </div>
