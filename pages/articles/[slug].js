@@ -25,7 +25,13 @@ export default function Article({ article, comments }) {
   const [favoritesTotal, setFavoritesTotal] = useState(favoritesCount);
   const [isFavoriteButtonDisabled, setIsFavoriteButtonDisabled] =
     useState(false);
+  const [isDeleteArticleButtonDisabled, setIsDeleteArticleButtonDisabled] =
+    useState(false);
+  const [isDeleteCommentButtonDisabled, setIsDeleteCommentButtonDisabled] =
+    useState(false);
   const [isFollowButtonDisabled, setIsFollowButtonDisabled] = useState(false);
+  const [isPostCommentButtonDisabled, setIsPostCommentButtonDisabled] =
+    useState(false);
 
   const router = useRouter();
   const { user } = useUser();
@@ -73,12 +79,13 @@ export default function Article({ article, comments }) {
         },
       }),
     };
+    setIsPostCommentButtonDisabled(true);
     const commentResp = await fetch(
       `${API_URL}/articles/${article.slug}/comments`,
       options
     );
-
     const commentJson = await commentResp.json();
+    setIsPostCommentButtonDisabled(false);
     setComments([...(commentList ?? []), commentJson]);
   };
 
@@ -86,7 +93,9 @@ export default function Article({ article, comments }) {
     const options = {
       method: 'DELETE',
     };
+    setIsDeleteCommentButtonDisabled(true);
     await fetch(`${API_URL}/articles/${article.slug}/comments/${id}`, options);
+    setIsDeleteCommentButtonDisabled(false);
     setComments(commentList.filter((comment) => comment.id !== id));
   };
 
@@ -98,7 +107,9 @@ export default function Article({ article, comments }) {
     const options = {
       method: 'DELETE',
     };
+    setIsDeleteArticleButtonDisabled(true);
     await fetch(`${API_URL}/articles/${article.slug}`, options);
+    setIsDeleteArticleButtonDisabled(false);
     router.push('/');
   };
 
@@ -109,11 +120,11 @@ export default function Article({ article, comments }) {
           <div className='container'>
             <h1>{title}</h1>
             <div className='article-meta'>
-              <Link href={`./@${username}`}>
+              <Link href={`/authors/${username}`}>
                 <img src={image} />
               </Link>
               <div className='info'>
-                <Link href={`./@${username}`}>
+                <Link href={`/authors/${username}`}>
                   <a className='author'>{username}</a>
                 </Link>
                 <span className='date'>
@@ -139,6 +150,7 @@ export default function Article({ article, comments }) {
                 <EditDeleteArticle
                   deleteArticle={deleteArticle}
                   editArticle={editArticle}
+                  isDeleteArticleButtonDisabled={isDeleteArticleButtonDisabled}
                 />
               )}
             </div>
@@ -166,11 +178,11 @@ export default function Article({ article, comments }) {
 
           <div className='article-actions'>
             <div className='article-meta'>
-              <Link href={`./@${username}`}>
+              <Link href={`/authors/${username}`}>
                 <img src={image} />
               </Link>
               <div className='info'>
-                <Link href={`./@${username}`}>
+                <Link href={`/authors/${username}`}>
                   <a className='author'>{username}</a>
                 </Link>
                 <span className='date'>
@@ -207,15 +219,19 @@ export default function Article({ article, comments }) {
                 <CommentForm
                   user={user}
                   createComment={createComment}
+                  isPostCommentButtonDisabled={isPostCommentButtonDisabled}
                 ></CommentForm>
               )}
-              {commentList?.length &&
+              {commentList?.length > 0 &&
                 commentList.map((comment) => (
                   <Comment
                     key={comment.id}
                     comment={comment}
                     deleteComment={deleteComment}
                     user={user}
+                    isDeleteCommentButtonDisabled={
+                      isDeleteCommentButtonDisabled
+                    }
                   />
                 ))}
             </div>

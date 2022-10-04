@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 
-export const CommentForm = ({ user, createComment }) => {
+export const CommentForm = ({
+  user,
+  createComment,
+  isPostCommentButtonDisabled,
+}) => {
   const [comment, setComment] = useState('');
 
   const handleSubmit = (e) => {
@@ -26,7 +30,12 @@ export const CommentForm = ({ user, createComment }) => {
             <img src={user.picture} className='comment-author-img' />
           </>
         )}
-        <button className='btn btn-sm btn-primary'>Post Comment</button>
+        <button
+          className='btn btn-sm btn-primary'
+          disabled={isPostCommentButtonDisabled}
+        >
+          Post Comment
+        </button>
       </div>
     </form>
   );

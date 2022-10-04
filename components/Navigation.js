@@ -35,7 +35,7 @@ export const Navigation = () => {
                 </Link>
               </li>
               <li className='nav-item'>
-                <Link href={`/@${user.nickname}`}>
+                <Link href={`/authors/${user.nickname}`}>
                   <a className='nav-link' style={{ display: 'flex' }}>
                     {userContentful?.image && (
                       <Image

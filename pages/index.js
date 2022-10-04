@@ -9,7 +9,7 @@ export default function Home({ tags, articles }) {
   const YOUR_FEED = 'Your Feed';
   const GLOBAL_FEED = 'Global Feed';
 
-  const [selectedTab, setSelectedTab] = useState('Global Feed');
+  const [selectedTab, setSelectedTab] = useState(GLOBAL_FEED);
 
   const { user } = useUser();
 

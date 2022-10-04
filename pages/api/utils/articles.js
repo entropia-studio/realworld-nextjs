@@ -146,10 +146,11 @@ export const getFeedArticles = async (session) => {
 
 export const getMinifiedArticle = (article, session) => {
   const { slug, title, description, body, user, favorites } = article.fields;
-  const { createdAt, updatedAt } = article.sys;
+  const { createdAt, updatedAt, id } = article.sys;
   const tagList = article.metadata?.tags?.map((tag) => tag.sys.id);
 
   const articleMinified = {
+    id,
     slug,
     title,
     description: documentToHtmlString(description),
