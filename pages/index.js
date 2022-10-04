@@ -6,6 +6,9 @@ import { useState } from 'react';
 import { useUser } from '@auth0/nextjs-auth0';
 
 export default function Home({ tags, articles }) {
+  const YOUR_FEED = 'Your Feed';
+  const GLOBAL_FEED = 'Global Feed';
+
   const [selectedTab, setSelectedTab] = useState('Global Feed');
 
   const { user } = useUser();
@@ -13,8 +16,16 @@ export default function Home({ tags, articles }) {
   const [articlesFiltered, setArticles] = useState(articles);
 
   const selectTab = async (tab) => {
+    const isTagTab = (tab) => tags.some((tag) => tab === tag);
+
     setSelectedTab(tab);
-    const articlesResponse = await fetch(`/api/articles?tag=${tab}`);
+    let endpoint = `/api/articles`;
+    if (tab === YOUR_FEED) {
+      endpoint = `${endpoint}/feed`;
+    } else if (isTagTab(tab)) {
+      endpoint = `${endpoint}?tag=${tab}`;
+    }
+    const articlesResponse = await fetch(endpoint);
     const articlesJson = await articlesResponse.json();
     setArticles(articlesJson.articles);
   };
@@ -38,27 +49,31 @@ export default function Home({ tags, articles }) {
                       <li className='nav-item'>
                         <a
                           className={`nav-link ${
-                            selectedTab === 'Your feed' ? 'active' : ''
+                            selectedTab === YOUR_FEED ? 'active' : ''
                           }`}
-                          onClick={() => selectTab('Your feed')}
+                          onClick={() => selectTab(YOUR_FEED)}
+                          role='button'
                         >
-                          Your Feed
+                          {YOUR_FEED}
                         </a>
                       </li>
                     )}
                     <li className='nav-item'>
                       <a
                         className={`nav-link ${
-                          selectedTab === 'Global Feed' ? 'active' : ''
+                          selectedTab === GLOBAL_FEED ? 'active' : ''
                         }`}
-                        onClick={() => selectTab('Global Feed')}
+                        onClick={() => selectTab(GLOBAL_FEED)}
+                        role='button'
                       >
-                        Global Feed
+                        {GLOBAL_FEED}
                       </a>
                     </li>
                     {tags.some((tag) => tag === selectedTab) && (
                       <li className='nav-item'>
-                        <a className={`nav-link active`}>#{selectedTab}</a>
+                        <a className={`nav-link active`} role='button'>
+                          #{selectedTab}
+                        </a>
                       </li>
                     )}
                   </ul>

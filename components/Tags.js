@@ -9,6 +9,7 @@ export const Tags = ({ tags, selectTab }) => {
               className='tag-pill tag-default'
               onClick={() => selectTab(tag)}
               key={tag}
+              role='button'
             >
               {tag}
             </a>

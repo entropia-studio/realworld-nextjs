@@ -68,7 +68,7 @@ export const ArticleRow = ({ article }) => {
             }}
           />
           <span>Read more...</span>
-          {tagList?.length && (
+          {tagList?.length > 0 && (
             <ul className='tag-list'>
               {tagList.map((tag) => (
                 <li
