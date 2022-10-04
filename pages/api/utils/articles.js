@@ -4,7 +4,9 @@ import { getCommentsByArticle } from './comments';
 import {
   deleteEntryById,
   findArticleIdBySlug,
+  findFollowedAuthors,
   findUserIdByEmail,
+  getArticlesByAuthorId,
   getEntryById,
   getRichText,
   publishEntry,
@@ -127,6 +129,19 @@ export const getTagsForArticle = async (articleTagList) => {
     })
   );
   return tags;
+};
+
+export const getFeedArticles = async (session) => {
+  const userId = await findUserIdByEmail(session.user.email);
+  const followedAuthors = await findFollowedAuthors(userId);
+  if (followedAuthors?.length === 0) {
+    return;
+  }
+  const authorIdList = followedAuthors.map((user) => user.sys.id);
+  const articles = await (
+    await getArticlesByAuthorId(authorIdList)
+  ).map((article) => getMinifiedArticle(article, session));
+  return articles;
 };
 
 export const getMinifiedArticle = (article, session) => {

@@ -70,3 +70,26 @@ export const getUserByEmail = async (email) => {
     await contentfulClient.getEntries(query)
   ).items[0];
 };
+
+export const findFollowedAuthors = async (userId) => {
+  const query = {
+    content_type: 'realUser',
+    include: 10,
+    ['fields.followers.sys.id']: userId,
+  };
+
+  return await (
+    await contentfulClient.getEntries(query)
+  ).items;
+};
+export const getArticlesByAuthorId = async (authorIdList) => {
+  const query = {
+    content_type: 'realArticle',
+    include: 10,
+    ['fields.user.sys.id[in]']: authorIdList.toString(),
+  };
+
+  return await (
+    await contentfulClient.getEntries(query)
+  ).items;
+};
