@@ -268,7 +268,7 @@ export async function getStaticPaths() {
   const paths = await getArticlePaths();
   return {
     paths,
-    fallback: false,
+    fallback: true,
   };
 }
 
