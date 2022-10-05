@@ -12,17 +12,10 @@ import EditDeleteArticle from '../../components/articles/EditDeleteArticle';
 import { FavoriteArticle } from '../../components/articles/FavoriteArticle';
 
 export default function Article({ article, comments }) {
-  const {
-    title,
-    description,
-    updatedAt,
-    createdAt,
-    body,
-    favoritesCount,
-    slug,
-  } = article;
+  const router = useRouter();
+  const { user } = useUser();
 
-  const [favoritesTotal, setFavoritesTotal] = useState(favoritesCount);
+  const [favoritesTotal, setFavoritesTotal] = useState(article?.favoritesCount);
   const [isFavoriteButtonDisabled, setIsFavoriteButtonDisabled] =
     useState(false);
   const [isDeleteArticleButtonDisabled, setIsDeleteArticleButtonDisabled] =
@@ -33,11 +26,15 @@ export default function Article({ article, comments }) {
   const [isPostCommentButtonDisabled, setIsPostCommentButtonDisabled] =
     useState(false);
 
-  const router = useRouter();
-  const { user } = useUser();
+  const [commentList, setComments] = useState(article?.comments);
 
-  const [commentList, setComments] = useState(comments);
-  const { username, image } = article.author;
+  if (router.isFallback) {
+    return <div>Loading...</div>;
+  }
+
+  const { title, description, updatedAt, createdAt, body, slug } = article;
+
+  const { username, image } = article?.author;
 
   const manageAuthorSubscription = async (following) => {
     if (!user) {
