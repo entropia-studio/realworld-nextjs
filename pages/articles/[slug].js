@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import { useUser } from '@auth0/nextjs-auth0';
-import { getArticleBySlug, getArticlePaths, getComments } from '../../lib/api';
+import { getArticleBySlug, getArticlePaths } from '../../lib/api';
 import { Layout } from '../../components/Layout';
 import { useState } from 'react';
 import { Comment } from '../../components/Comment';
@@ -11,7 +11,7 @@ import FollowAuthor from '../../components/articles/FollowAuthor';
 import EditDeleteArticle from '../../components/articles/EditDeleteArticle';
 import { FavoriteArticle } from '../../components/articles/FavoriteArticle';
 
-export default function Article({ article, comments }) {
+export default function Article({ article }) {
   const router = useRouter();
   const { user } = useUser();
 
@@ -272,12 +272,10 @@ export async function getStaticPaths() {
 export async function getStaticProps({ params }) {
   const { slug } = params;
   const article = (await getArticleBySlug(slug)).article;
-  const comments = (await getComments(slug)).comments ?? null;
 
   return {
     props: {
       article,
-      comments,
     },
   };
 }
