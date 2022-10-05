@@ -97,7 +97,7 @@ export default function Home({ tags, articles }) {
   );
 }
 
-export async function getStaticProps() {
+export async function getServerSideProps() {
   const tags = (await getTags()).tags ?? null;
   const articles = (await getArticles()).articles;
   return {
