@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
-import { ArticleForm } from '../../components/articles/ArticleForm';
-import { Layout } from '../../components/Layout';
+import { ArticleForm } from '../components/articles/ArticleForm';
+import { Layout } from '../components/Layout';
 
 export default function Editor() {
   const router = useRouter();
