@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useUser } from '@auth0/nextjs-auth0';
 import { FavoriteArticleHeart } from './FavoriteArticleHeart';
-import { API_URL } from '../../lib/api';
 
 export const ArticleRow = ({ article }) => {
   const {
@@ -25,7 +25,7 @@ export const ArticleRow = ({ article }) => {
 
   const manageFavorite = async (favorite) => {
     if (!user) {
-      router.push(`${API_URL}/auth/login`);
+      router.push(`/api/auth/login`);
       return;
     }
     const options = {
@@ -36,23 +36,36 @@ export const ArticleRow = ({ article }) => {
       favorite ? favoritesTotal - 1 : favoritesTotal + 1;
 
     setIsFavoriteButtonDisabled(true);
-    await fetch(`${API_URL}/articles/${slug}/favorite`, options);
+    await fetch(`/api/articles/${slug}/favorite`, options);
     setFavoritesTotal(getFavoritesTotal(favoritesTotal));
     setIsFavoriteButtonDisabled(false);
   };
 
   return (
     <div className='article-preview'>
-      <div className='article-meta'>
-        <Link href={`/authors/${username}`}>
-          <img src={image} />
-        </Link>
-        <div className='info'>
+      <div
+        className='article-meta'
+        style={{ display: 'flex', justifyContent: 'space-between' }}
+      >
+        <div style={{ display: 'flex' }}>
           <Link href={`/authors/${username}`}>
-            <a className='author'>{username}</a>
+            <>
+              <Image
+                src={image}
+                width={32}
+                height={32}
+                alt={`User ${username}`}
+              />
+            </>
           </Link>
-          <span className='date'>{updatedAt ? updatedAt : createdAt}</span>
+          <div className='info' style={{ paddingLeft: '.5rem' }}>
+            <Link href={`/authors/${username}`}>
+              <a className='author'>{username}</a>
+            </Link>
+            <span className='date'>{updatedAt ? updatedAt : createdAt}</span>
+          </div>
         </div>
+
         <FavoriteArticleHeart
           slug={slug}
           manageFavorite={manageFavorite}

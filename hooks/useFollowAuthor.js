@@ -1,9 +1,8 @@
 import useSWR from 'swr';
 import { fetcher } from '../lib/util';
-import { API_URL } from '../lib/api';
 
 export const useFollowAuthor = (username) => {
-  const { data, error } = useSWR(`${API_URL}/profiles/${username}`, fetcher);
+  const { data, error } = useSWR(`/api/profiles/${username}`, fetcher);
 
   return {
     followedAuthor: data?.following ?? false,

@@ -17,7 +17,7 @@ export const FavoriteArticleHeart = ({
 
   const onClickButton = async () => {
     await manageFavorite(favoritedArticle);
-    mutate(`${API_URL}/articles/${slug}/favorite`);
+    mutate(`/api/articles/${slug}/favorite`);
   };
 
   return (
@@ -26,6 +26,7 @@ export const FavoriteArticleHeart = ({
         className={`btn btn-sm pull-xs-right ${
           favoritedArticle ? 'btn-primary' : 'btn-outline-primary'
         }`}
+        style={{ maxHeight: '28px' }}
         onClick={onClickButton}
         disabled={isFavoriteButtonDisabled}
       >

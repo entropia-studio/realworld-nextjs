@@ -21,13 +21,14 @@ export const FavoriteArticle = ({
 
   const onClickButton = async () => {
     await manageFavorite(favoritedArticle);
-    mutate(`${API_URL}/articles/${slug}/favorite`);
+    mutate(`/api/articles/${slug}/favorite`);
   };
 
   return (
     <>
       <button
         className='btn btn-sm btn-primary'
+        style={{ maxHeight: '28px' }}
         onClick={onClickButton}
         disabled={isFavoriteButtonDisabled}
       >

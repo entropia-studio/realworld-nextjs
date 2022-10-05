@@ -38,7 +38,7 @@ export const ArticleForm = ({ article, onNewArticle, onUpdateArticle }) => {
                     name='title'
                     className='form-control form-control-lg'
                     placeholder='Article Title'
-                    value={title}
+                    value={title ?? ''}
                     onChange={(e) => setTitle(e.target.value)}
                   />
                 </fieldset>
@@ -46,7 +46,7 @@ export const ArticleForm = ({ article, onNewArticle, onUpdateArticle }) => {
                   <input
                     type='text'
                     name='description'
-                    value={description}
+                    value={description ?? ''}
                     className='form-control'
                     placeholder="What's this article about?"
                     onChange={(e) => setDescription(e.target.value)}
@@ -59,7 +59,7 @@ export const ArticleForm = ({ article, onNewArticle, onUpdateArticle }) => {
                     rows='8'
                     placeholder='Write your article (in markdown)'
                     onChange={(e) => setBody(e.target.value)}
-                    value={body}
+                    value={body ?? ''}
                   ></textarea>
                 </fieldset>
                 <fieldset className='form-group'>
@@ -68,7 +68,7 @@ export const ArticleForm = ({ article, onNewArticle, onUpdateArticle }) => {
                     name='tags'
                     className='form-control'
                     placeholder='Enter tags'
-                    value={tags}
+                    value={tags ?? ''}
                     onChange={(e) => setTags(e.target.value)}
                   />
                   <div className='tag-list'></div>

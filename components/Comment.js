@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 export const Comment = ({
   comment,
@@ -28,7 +29,13 @@ export const Comment = ({
       <div className='card-footer'>
         <Link href={`/authors/${author.username}`}>
           <a className='comment-author'>
-            <img src={image} className='comment-author-img' />
+            <Image
+              src={image}
+              className='comment-author-img'
+              width={20}
+              height={20}
+              alt={author.username}
+            />
           </a>
         </Link>
         &nbsp;

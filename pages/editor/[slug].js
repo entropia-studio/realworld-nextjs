@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { API_URL, getArticleBySlug } from '../../lib/api';
+import { getArticleBySlug } from '../../lib/api';
 import { Layout } from '../../components/Layout';
 import { ArticleForm } from '../../components/articles/ArticleForm';
 
@@ -16,9 +16,9 @@ export default function SlugEditor({ article }) {
       }),
     };
 
-    const articleResp = await fetch(`${API_URL}/articles/${slug}`, options);
+    const articleResp = await fetch(`/api/articles/${slug}`, options);
     const articleJson = await articleResp.json();
-    router.push(`../articles/${articleJson.article.slug}`);
+    router.push(`/articles/${articleJson.article.slug}`);
   };
 
   return (

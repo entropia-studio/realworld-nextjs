@@ -42,6 +42,7 @@ export const Navigation = () => {
                         src={userContentful?.image}
                         height='26'
                         width='26'
+                        alt={user.nickname}
                       />
                     )}
                     &nbsp;{user.nickname}

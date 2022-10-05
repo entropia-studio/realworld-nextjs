@@ -17,13 +17,14 @@ export default function FollowAuthor({
 
   const onClickButton = async () => {
     await manageAuthorSubscription(followedAuthor);
-    mutate(`${API_URL}/profiles/${username}`);
+    mutate(`/api/profiles/${username}`);
   };
 
   return (
     <>
       <button
         className='btn btn-sm action-btn btn-secondary'
+        style={{ maxHeight: '28px' }}
         onClick={onClickButton}
         disabled={isFollowButtonDisabled}
       >

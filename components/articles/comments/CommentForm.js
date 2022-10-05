@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Image from 'next/image';
 
 export const CommentForm = ({
   user,
@@ -27,7 +28,13 @@ export const CommentForm = ({
       <div className='card-footer'>
         {user && (
           <>
-            <img src={user.picture} className='comment-author-img' />
+            <Image
+              src={user.picture}
+              className='comment-author-img'
+              width={32}
+              height={32}
+              alt={`Username ${user.nickname}`}
+            />
           </>
         )}
         <button

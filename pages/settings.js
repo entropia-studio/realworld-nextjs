@@ -1,7 +1,6 @@
 import { Layout } from '../components/Layout';
 import Link from 'next/link';
 import { withPageAuthRequired } from '@auth0/nextjs-auth0';
-import { API_URL } from '../lib/api';
 import { useState } from 'react';
 import { convert } from 'html-to-text';
 import { useUserContentful } from '../hooks/useUserContentful';
@@ -25,7 +24,7 @@ export default function Setting({ user }) {
       }),
     };
     setSubmitDisabled(true);
-    const userResp = await fetch(`${API_URL}/user`, options);
+    const userResp = await fetch(`/api/user`, options);
     await userResp.json();
     setSubmitDisabled(false);
   };

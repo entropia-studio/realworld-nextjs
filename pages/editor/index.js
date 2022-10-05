@@ -1,7 +1,6 @@
 import { useRouter } from 'next/router';
 import { ArticleForm } from '../../components/articles/ArticleForm';
 import { Layout } from '../../components/Layout';
-import { API_URL } from '../../lib/api';
 
 export default function Editor() {
   const router = useRouter();
@@ -14,9 +13,9 @@ export default function Editor() {
       }),
     };
 
-    const articleResp = await fetch(`${API_URL}/articles`, options);
+    const articleResp = await fetch(`/api/articles`, options);
     const articleJson = await articleResp.json();
-    router.push(`../articles/${articleJson.slug}`);
+    router.push(`/articles/${articleJson.slug}`);
   };
 
   return (

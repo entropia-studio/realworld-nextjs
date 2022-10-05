@@ -1,10 +1,10 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import Image from 'next/image';
 import { useUser } from '@auth0/nextjs-auth0';
 import { getArticleBySlug, getArticlePaths, getComments } from '../../lib/api';
 import { Layout } from '../../components/Layout';
 import { useState } from 'react';
-import { API_URL } from '../../lib/api';
 import { Comment } from '../../components/Comment';
 import { CommentForm } from '../../components/articles/comments/CommentForm';
 import FollowAuthor from '../../components/articles/FollowAuthor';
@@ -41,20 +41,20 @@ export default function Article({ article, comments }) {
 
   const manageAuthorSubscription = async (following) => {
     if (!user) {
-      router.push(`${API_URL}/auth/login`);
+      router.push(`/api/auth/login`);
       return;
     }
     const options = {
       method: following ? 'DELETE' : 'POST',
     };
     setIsFollowButtonDisabled(true);
-    await fetch(`${API_URL}/follow/${username}`, options);
+    await fetch(`/api/follow/${username}`, options);
     setIsFollowButtonDisabled(false);
   };
 
   const manageFavorite = async (favorite) => {
     if (!user) {
-      router.push(`${API_URL}/auth/login`);
+      router.push(`/api/auth/login`);
       return;
     }
     const options = {
@@ -65,7 +65,7 @@ export default function Article({ article, comments }) {
       favorite ? favoritesTotal - 1 : favoritesTotal + 1;
 
     setIsFavoriteButtonDisabled(true);
-    await fetch(`${API_URL}/articles/${slug}/favorite`, options);
+    await fetch(`/api/articles/${slug}/favorite`, options);
     setFavoritesTotal(getFavoritesTotal(favoritesTotal));
     setIsFavoriteButtonDisabled(false);
   };
@@ -81,7 +81,7 @@ export default function Article({ article, comments }) {
     };
     setIsPostCommentButtonDisabled(true);
     const commentResp = await fetch(
-      `${API_URL}/articles/${article.slug}/comments`,
+      `/api/articles/${article.slug}/comments`,
       options
     );
     const commentJson = await commentResp.json();
@@ -94,13 +94,13 @@ export default function Article({ article, comments }) {
       method: 'DELETE',
     };
     setIsDeleteCommentButtonDisabled(true);
-    await fetch(`${API_URL}/articles/${article.slug}/comments/${id}`, options);
+    await fetch(`/api/articles/${article.slug}/comments/${id}`, options);
     setIsDeleteCommentButtonDisabled(false);
     setComments(commentList.filter((comment) => comment.id !== id));
   };
 
   const editArticle = async () => {
-    router.push(`../editor/${slug}`);
+    router.push(`/editor/${slug}`);
   };
 
   const deleteArticle = async () => {
@@ -108,7 +108,7 @@ export default function Article({ article, comments }) {
       method: 'DELETE',
     };
     setIsDeleteArticleButtonDisabled(true);
-    await fetch(`${API_URL}/articles/${article.slug}`, options);
+    await fetch(`/api/articles/${article.slug}`, options);
     setIsDeleteArticleButtonDisabled(false);
     router.push('/');
   };
@@ -119,17 +119,26 @@ export default function Article({ article, comments }) {
         <div className='banner'>
           <div className='container'>
             <h1>{title}</h1>
-            <div className='article-meta'>
-              <Link href={`/authors/${username}`}>
-                <img src={image} />
-              </Link>
-              <div className='info'>
+            <div className='article-meta' style={{ display: 'flex' }}>
+              <div style={{ display: 'flex' }}>
                 <Link href={`/authors/${username}`}>
-                  <a className='author'>{username}</a>
+                  <>
+                    <Image
+                      src={image}
+                      width={32}
+                      height={32}
+                      alt={`Username ${username}`}
+                    />
+                  </>
                 </Link>
-                <span className='date'>
-                  {updatedAt ? updatedAt : createdAt}
-                </span>
+                <div className='info' style={{ paddingLeft: '.5rem' }}>
+                  <Link href={`/authors/${username}`}>
+                    <a className='author'>{username}</a>
+                  </Link>
+                  <span className='date'>
+                    {updatedAt ? updatedAt : createdAt}
+                  </span>
+                </div>
               </div>
               {user?.nickname !== article.author.username ? (
                 <>
@@ -177,23 +186,35 @@ export default function Article({ article, comments }) {
           <hr />
 
           <div className='article-actions'>
-            <div className='article-meta'>
-              <Link href={`/authors/${username}`}>
-                <img src={image} />
-              </Link>
-              <div className='info'>
+            <div
+              className='article-meta'
+              style={{ display: 'flex', justifyContent: 'center' }}
+            >
+              <div style={{ display: 'flex' }}>
                 <Link href={`/authors/${username}`}>
-                  <a className='author'>{username}</a>
+                  <>
+                    <Image
+                      src={image}
+                      width={32}
+                      height={32}
+                      alt={`Username ${username}`}
+                    />
+                  </>
                 </Link>
-                <span className='date'>
-                  {updatedAt ? updatedAt : createdAt}
-                </span>
+                <div className='info' style={{ paddingLeft: '.5rem' }}>
+                  <Link href={`/authors/${username}`}>
+                    <a className='author'>{username}</a>
+                  </Link>
+                  <span className='date'>
+                    {updatedAt ? updatedAt : createdAt}
+                  </span>
+                </div>
               </div>
               {user?.nickname !== article.author.username ? (
                 <>
                   <FollowAuthor
-                    username={username}
                     manageAuthorSubscription={manageAuthorSubscription}
+                    username={username}
                     isFollowButtonDisabled={isFollowButtonDisabled}
                   />
                   &nbsp;&nbsp;
@@ -208,6 +229,7 @@ export default function Article({ article, comments }) {
                 <EditDeleteArticle
                   deleteArticle={deleteArticle}
                   editArticle={editArticle}
+                  isDeleteArticleButtonDisabled={isDeleteArticleButtonDisabled}
                 />
               )}
             </div>
