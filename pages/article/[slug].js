@@ -1,11 +1,8 @@
-import { useRouter } from 'next/router';
 import { getArticleBySlug } from '../../lib/api';
 import { Layout } from '../../components/Layout';
 import { ArticleForm } from '../../components/articles/ArticleForm';
 
 export default function SlugEditor({ article }) {
-  const router = useRouter();
-
   const { slug } = article;
 
   const onUpdateArticle = async (article) => {
@@ -18,7 +15,9 @@ export default function SlugEditor({ article }) {
 
     const articleResp = await fetch(`/api/articles/${slug}`, options);
     const articleJson = await articleResp.json();
-    router.push(`/articles/${articleJson.article.slug}`);
+    setTimeout(() => {
+      window.location = `/articles/${articleJson.article.slug}`;
+    }, 500);
   };
 
   return (

@@ -96,7 +96,7 @@ export default function Article({ article, comments }) {
   };
 
   const editArticle = async () => {
-    router.push(`/editor/${slug}`);
+    router.push(`/article/${slug}`);
   };
 
   const deleteArticle = async () => {
