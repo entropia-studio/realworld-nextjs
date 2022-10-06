@@ -8,10 +8,10 @@ export const CommentForm = ({
 }) => {
   const [comment, setComment] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    await createComment(comment);
     setComment('');
-    createComment(comment);
   };
 
   return (
