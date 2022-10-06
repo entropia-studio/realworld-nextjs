@@ -17,7 +17,7 @@ export default function SlugEditor({ article }) {
     const articleJson = await articleResp.json();
     setTimeout(() => {
       window.location = `/articles/${articleJson.article.slug}`;
-    }, 500);
+    }, 2500);
   };
 
   return (
