@@ -6,7 +6,6 @@ import {
   getRichText,
   publishEntry,
   deleteEntryById,
-  unpublishEntryById,
 } from './contentful';
 import { getAuthor } from './articles';
 import { contentfulManagementEnvironment } from '../../../contentful/management';
@@ -108,9 +107,7 @@ const createComment = async (userSession, articleEntry, comment) => {
   const commentPayload = {
     fields: {
       internalName: {
-        'en-US': `${articleEntry.fields.title} - Comment ${
-          (articleEntry.fields.comments || []).length + 1
-        }`,
+        'en-US': `${articleEntry.fields.title} - Comment ${new Date()}`,
       },
       description: { 'en-US': getRichText(comment) },
       user: {
