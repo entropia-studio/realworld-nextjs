@@ -30,7 +30,6 @@ export default function Article({ article }) {
   const [isFollowButtonDisabled, setIsFollowButtonDisabled] = useState(false);
   const [isPostCommentButtonDisabled, setIsPostCommentButtonDisabled] =
     useState(false);
-  const [commentList, setComments] = useState(comments);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -89,10 +88,8 @@ export default function Article({ article }) {
       `/api/articles/${article.slug}/comments`,
       options
     );
-    const commentJson = await commentResp.json();
+    await commentResp.json();
     setIsPostCommentButtonDisabled(false);
-    console.log('commentList:::', commentList);
-    console.log('comments:::', comments);
     mutate(`/api/articles/${slug}/comments`);
   };
 
