@@ -1,8 +1,9 @@
+import { withPageAuthRequired } from '@auth0/nextjs-auth0';
 import { useRouter } from 'next/router';
 import { ArticleForm } from '../components/articles/ArticleForm';
 import { Layout } from '../components/Layout';
 
-export default function EditorPage() {
+export default withPageAuthRequired(function EditorPage() {
   const router = useRouter();
 
   const onNewArticle = async (article) => {
@@ -23,4 +24,4 @@ export default function EditorPage() {
       <ArticleForm onNewArticle={onNewArticle} />
     </Layout>
   );
-}
+});

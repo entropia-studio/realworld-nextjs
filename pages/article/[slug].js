@@ -1,8 +1,9 @@
 import { getArticleBySlug } from '../../lib/api';
 import { Layout } from '../../components/Layout';
 import { ArticleForm } from '../../components/articles/ArticleForm';
+import { withPageAuthRequired } from '@auth0/nextjs-auth0';
 
-export default function SlugEditor({ article }) {
+export default withPageAuthRequired(function SlugEditor({ article }) {
   const { slug } = article;
 
   const onUpdateArticle = async (article) => {
@@ -25,7 +26,7 @@ export default function SlugEditor({ article }) {
       <ArticleForm onUpdateArticle={onUpdateArticle} article={article} />
     </Layout>
   );
-}
+});
 
 export async function getServerSideProps({ params }) {
   const { slug } = params;
