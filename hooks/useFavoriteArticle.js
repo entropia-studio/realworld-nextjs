@@ -1,8 +1,7 @@
 import useSWR from 'swr';
-import { fetcher } from '../lib/util';
 
 export const useFavoriteArticle = (slug) => {
-  const { data, error } = useSWR(`/api/articles/${slug}/favorite`, fetcher);
+  const { data, error } = useSWR(`/api/articles/${slug}/favorite`);
 
   return {
     favoritedArticle: data?.article?.favorited ?? false,
