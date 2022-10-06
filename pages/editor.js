@@ -15,7 +15,10 @@ export default function Editor() {
 
     const articleResp = await fetch(`/api/articles`, options);
     const articleJson = await articleResp.json();
-    router.push(`/articles/${articleJson.slug}`);
+    // Allow 500ms to revalidate the article through the webhook in Contenful -> /api/revalidate.js
+    setTimeout(() => {
+      router.push(`/articles/${articleJson.slug}`);
+    }, 500);
   };
 
   return (

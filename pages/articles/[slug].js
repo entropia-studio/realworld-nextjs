@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import { useUser } from '@auth0/nextjs-auth0';
-import { getArticleBySlug, getArticlePaths } from '../../lib/api';
+import { getArticleBySlug, getArticlePaths, getComments } from '../../lib/api';
 import { Layout } from '../../components/Layout';
 import { useState } from 'react';
 import { Comment } from '../../components/Comment';
@@ -10,15 +10,10 @@ import { CommentForm } from '../../components/articles/comments/CommentForm';
 import FollowAuthor from '../../components/articles/FollowAuthor';
 import EditDeleteArticle from '../../components/articles/EditDeleteArticle';
 import { FavoriteArticle } from '../../components/articles/FavoriteArticle';
-import { useComments } from '../../hooks/useComments';
-import { useSWRConfig } from 'swr';
 
-export default function Article({ article }) {
+export default function Article({ article, comments }) {
   const router = useRouter();
   const { user } = useUser();
-  const { mutate } = useSWRConfig();
-
-  const { comments, isLoading } = useComments(article?.slug);
 
   const [favoritesTotal, setFavoritesTotal] = useState(article?.favoritesCount);
   const [isFavoriteButtonDisabled, setIsFavoriteButtonDisabled] =
@@ -30,10 +25,7 @@ export default function Article({ article }) {
   const [isFollowButtonDisabled, setIsFollowButtonDisabled] = useState(false);
   const [isPostCommentButtonDisabled, setIsPostCommentButtonDisabled] =
     useState(false);
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  const [commentList, setComments] = useState(comments);
 
   if (router.isFallback) {
     return <div>Loading...</div>;
@@ -88,9 +80,9 @@ export default function Article({ article }) {
       `/api/articles/${article.slug}/comments`,
       options
     );
-    await commentResp.json();
+    const commentJson = await commentResp.json();
     setIsPostCommentButtonDisabled(false);
-    mutate(`/api/articles/${slug}/comments`);
+    setComments([...(commentList ?? []), commentJson]);
   };
 
   const deleteComment = async (id) => {
@@ -100,7 +92,7 @@ export default function Article({ article }) {
     setIsDeleteCommentButtonDisabled(true);
     await fetch(`/api/articles/${article.slug}/comments/${id}`, options);
     setIsDeleteCommentButtonDisabled(false);
-    mutate(`/api/articles/${slug}/comments`);
+    setComments(commentList.filter((comment) => comment.id !== id));
   };
 
   const editArticle = async () => {
@@ -248,8 +240,8 @@ export default function Article({ article }) {
                   isPostCommentButtonDisabled={isPostCommentButtonDisabled}
                 ></CommentForm>
               )}
-              {comments?.length > 0 &&
-                comments.map((comment) => (
+              {commentList?.length > 0 &&
+                commentList.map((comment) => (
                   <Comment
                     key={comment.id}
                     comment={comment}
@@ -278,11 +270,13 @@ export async function getStaticPaths() {
 
 export async function getStaticProps({ params }) {
   const { slug } = params;
-  const article = (await getArticleBySlug(slug)).article;
+  const article = await (await getArticleBySlug(slug)).article;
+  const comments = (await (await getComments(slug)).comments) ?? null;
 
   return {
     props: {
       article,
+      comments,
     },
     revalidate: 1,
   };
