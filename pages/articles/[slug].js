@@ -10,10 +10,15 @@ import { CommentForm } from '../../components/articles/comments/CommentForm';
 import FollowAuthor from '../../components/articles/FollowAuthor';
 import EditDeleteArticle from '../../components/articles/EditDeleteArticle';
 import { FavoriteArticle } from '../../components/articles/FavoriteArticle';
+import { useComments } from '../../hooks/useComments';
+import { useSWRConfig } from 'swr';
 
 export default function Article({ article }) {
   const router = useRouter();
   const { user } = useUser();
+  const { mutate } = useSWRConfig();
+
+  const { comments, isLoading } = useComments(article?.slug);
 
   const [favoritesTotal, setFavoritesTotal] = useState(article?.favoritesCount);
   const [isFavoriteButtonDisabled, setIsFavoriteButtonDisabled] =
@@ -25,8 +30,11 @@ export default function Article({ article }) {
   const [isFollowButtonDisabled, setIsFollowButtonDisabled] = useState(false);
   const [isPostCommentButtonDisabled, setIsPostCommentButtonDisabled] =
     useState(false);
+  const [commentList, setComments] = useState(comments);
 
-  const [commentList, setComments] = useState(article?.comments);
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   if (router.isFallback) {
     return <div>Loading...</div>;
@@ -83,7 +91,9 @@ export default function Article({ article }) {
     );
     const commentJson = await commentResp.json();
     setIsPostCommentButtonDisabled(false);
-    setComments([...(commentList ?? []), commentJson]);
+    console.log('commentList:::', commentList);
+    console.log('comments:::', comments);
+    mutate(`/api/articles/${slug}/comments`);
   };
 
   const deleteComment = async (id) => {
@@ -93,7 +103,7 @@ export default function Article({ article }) {
     setIsDeleteCommentButtonDisabled(true);
     await fetch(`/api/articles/${article.slug}/comments/${id}`, options);
     setIsDeleteCommentButtonDisabled(false);
-    setComments(commentList.filter((comment) => comment.id !== id));
+    mutate(`/api/articles/${slug}/comments`);
   };
 
   const editArticle = async () => {
@@ -241,8 +251,8 @@ export default function Article({ article }) {
                   isPostCommentButtonDisabled={isPostCommentButtonDisabled}
                 ></CommentForm>
               )}
-              {commentList?.length > 0 &&
-                commentList.map((comment) => (
+              {comments?.length > 0 &&
+                comments.map((comment) => (
                   <Comment
                     key={comment.id}
                     comment={comment}
@@ -277,5 +287,6 @@ export async function getStaticProps({ params }) {
     props: {
       article,
     },
+    revalidate: 1,
   };
 }
