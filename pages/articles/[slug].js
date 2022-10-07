@@ -27,10 +27,6 @@ export default function Article({ article, comments }) {
     useState(false);
   const [commentList, setComments] = useState(comments);
 
-  if (router.isFallback) {
-    return <div>Loading...</div>;
-  }
-
   const { title, description, updatedAt, createdAt, body, slug } = article;
 
   const { username, image } = article?.author;
@@ -264,7 +260,7 @@ export async function getStaticPaths() {
   const paths = await getArticlePaths();
   return {
     paths,
-    fallback: true,
+    fallback: 'blocking',
   };
 }
 
@@ -278,6 +274,5 @@ export async function getStaticProps({ params }) {
       article,
       comments,
     },
-    revalidate: 1,
   };
 }
